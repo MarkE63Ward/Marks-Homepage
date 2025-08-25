@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Marks Homepage</title>
+<meta name="description" content="A simple personal start page with Google search and bookmark cards." />
+<style>
+:root{
+  --bg: #0b1020;
+  --bg-soft: #111731;
+  --text: #e8ecf1;
+  --muted: #a8b3c7;
+  --card: #151b3b;
+  --ring: #3a57e8;
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --radius: 18px;
+  --gap: 16px;
+  --maxw: 1000px;
+}
+:root[data-theme="light"] {
+  --bg: #f6f7fb;
+  --bg-soft: #ffffff;
+  --text: #0b1020;
+  --muted: #4b5565;
+  --card: #ffffff;
+  --ring: #3556f3;
+  --shadow: 0 10px 30px rgba(0,0,0,.1);
+  --radius: 18px; /* keep card roundness! */
+  --gap: 16px;
+  --maxw: 1000px;
+}
+body{
+  margin:10px;
+  font: 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: radial-gradient(1200px 800px at 70% -100px, rgba(90,123,255,.15), transparent), var(--bg);
+  color: var(--text);
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-start;
+  padding: 50px;
+  min-height: 100vh;
+  flex-direction: column;
+}
+.wrap{ width: 100%; max-width: var(--maxw); }
+header{
+  display:flex; align-items:center; justify-content:space-between; gap: 12px;
+  margin-bottom: 20px;
+}
+.brand{
+  display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.2px;
+}
+.brand .dot{ width:10px; height:10px; border-radius:50%; background:linear-gradient(135deg, #5a7bff, #00d4ff); box-shadow: 0 0 18px rgba(58,87,232,.8); }
+.muted{ color: var(--muted); }
+
+.controls{ display:flex; align-items:center; gap:10px; }
+.btn{
+  appearance:none; border:1px solid rgba(255,255,255,.08); background:var(--bg-soft); color:var(--text);
+  padding:10px 14px; border-radius: 999px; cursor:pointer; transition:.2s ease; box-shadow: var(--shadow);
+}
+.btn:hover{ transform: translateY(-1px); }
+
+.search-card{
+  background: var(--card);
+  padding: 22px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,.06);
+  margin-bottom: 20px;
+}
+
+form.search { display:flex; gap:10px; align-items:center; }
+.search input[type="text"]{
+  width:100%; border: 1.5px solid transparent; outline:none; background: var(--bg-soft);
+  color: var(--text); padding: 14px 16px; border-radius: 12px; font-size: 18px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.05);
+}
+.search input[type="text"]:focus{
+  border-color: var(--ring);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--ring) 25%, transparent);
+}
+.search button{
+  border: none; background: var(--ring); color: white; padding: 14px 18px; border-radius: 12px;
+  font-weight: 600; cursor:pointer; transition:.2s ease; box-shadow: var(--shadow);
+}
+.search button:hover{ filter: brightness(1.05); transform: translateY(-1px); }
+
+.grid{
+  display:flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+}
+.card{
+  position: relative;
+  border-radius: var(--radius);
+  background: var(--card);
+  padding: 16px 20px;
+  border: 1px solid rgba(255,255,255,.06);
+  box-shadow: var(--shadow);
+  display:flex; gap: 12px; align-items:center;
+  text-decoration:none; color: var(--text);
+  transition: transform .16s ease, box-shadow .16s ease;
+  min-width: 180px;
+  flex: 1 1 180px;
+  cursor: pointer;
+}
+.card:hover{ transform: translateY(-2px); }
+.blob{
+  position:absolute; inset:auto -20px -20px auto; width: 120px; height: 120px; filter: blur(24px); opacity:.35;
+  background: radial-gradient(closest-side, var(--blob, #5a7bff), transparent 70%);
+  pointer-events:none;
+}
+.icon{
+  width: 36px; height:36px; display:grid; place-items:center; border-radius: 12px; background: color-mix(in oklab, var(--ring) 18%, transparent);
+  font-size: 20px;
+}
+.card .meta{ display:flex; flex-direction:column; }
+.title{ font-weight: 700; font-size: 16px; }
+
+.back-btn{
+  display:none;
+  margin-bottom: 16px;
+  padding: 10px 16px;
+  background: #3a57e8;   /* bright blue */
+  color: #fff;           /* white text */
+  border: none;
+  border-radius: 12px;
+  cursor:pointer;
+  box-shadow: var(--shadow);
+}
+.back-btn:hover{ transform: translateY(-1px); }
+
+footer{ margin-top: 28px; color: var(--muted); font-size: 13px; text-align:center; }
+footer a{ color: inherit; }
+/* Top centered date/time */
+.top-time{
+  width: 100%;
+  text-align: center;
+  font-weight: 700;
+  font-size: 32px;
+  margin-bottom: 50px;
+}
+
+/* Center the whole page content horizontally */
+body{
+  /* REPLACE align-items:flex-start with this: */
+  align-items: center;
+}
+
+/* Center the cards grid */
+.grid{
+  justify-content: center;
+}
+.calendar-modal {
+  display: none; /* hidden until toggled */
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-content {
+  background: var(--bg-soft);
+  color: var(--text);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-width: 340px;
+  width: 100%;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.calendar-header #calendarTitle {
+  font-weight: bold;
+  font-size: 16px;
+  flex: 1;
+  text-align: center;
+}
+
+.close-btn {
+  background: #ff3b30;
+  color: white;
+  margin-left: 8px;
+}
+
+#calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+#calendar div {
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+#calendar .header {
+  font-weight: bold;
+}
+
+#calendar .today {
+  background: var(--ring);
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<div id="topTime" class="top-time">Loading date…</div>
+<header>
+  <div class="brand" title="Mark's Personal Homepage">
+    <span class="dot" aria-hidden="true"></span>
+    <span>Mark's Homepage</span>
+  </div>
+
+  <div class="controls">
+    <button id="quickbaseBtn" class="btn" title="Open Quickbase">🗄️ Quickbase</button>
+    <button id="calendarToggle" class="btn" title="Show calendar">📅 Calendar</button>
+    <button id="themeToggle" class="btn" title="Toggle light/dark">🌓 Theme</button>
+</div>
+</header>
+
+<section class="search-card">
+  <form class="search" action="https://www.google.com/search" method="GET" role="search" aria-label="Google search">
+    <input id="q" type="text" name="q" placeholder="Search Google…" autocomplete="off" spellcheck="false" aria-label="Search" />
+    <button type="submit" aria-label="Search">Search</button>
+    <input type="hidden" name="hl" value="en" />
+  </form>
+  <div class="muted" style="margin-top:10px; font-size:15px">Tips- Use site: to search within a website | Use quotes for exact matches | Use filetype: to find documents.</div>
+</section>
+
+<button id="backBtn" class="back-btn">← Back</button>
+<div class="grid" id="cards" aria-label="Bookmarks"></div>
+
+<footer>
+  <div>Customize your bookmarks by editing the <code>bookmarks</code> list in this file. No frameworks. No tracking. ✨</div>
+</footer>
+<!-- Calendar Modal -->
+<div id="calendarModal" class="calendar-modal">
+  <div class="calendar-content">
+    <div class="calendar-header">
+      <button id="prevMonth" class="btn">◀</button>
+      <span id="calendarTitle"></span>
+      <button id="nextMonth" class="btn">▶</button>
+      <button id="closeCalendar" class="btn close-btn">✖</button>
+    </div>
+    <div id="calendar"></div>
+  </div>
+</div>
+
+<script>
+const bookmarks = [
+  {
+    title: 'Posse',
+    icon: '📂',
+    blob: '#ff9500',
+    children: [
+      {
+        title: 'Posse Test',
+        icon: '🧪',
+        blob: '#ffcc00',
+        children: [
+          { title: 'Internal Test', url: 'https://eclipsetest-int.phila.gov/phluatest/int/lms/#menuPaneUseKey=1013343_2', icon: '🖥️', blob: '#5a7bff' },
+          { title: 'Public Test', url: 'https://eclipsetest-ext.phila.gov/phluatest/pub/lms/Login.aspx', icon: '👥', blob: '#34c759' },
+          { title: 'Config Test', url: 'https://eclipsetest-int.phila.gov/phluatest/int/config/Login.aspx', icon: '⚙️', blob: '#ff3b30' }
+        ]
+      },
+      {
+        title: 'Posse Training',
+        icon: '🎓',
+        blob: '#00bcd4',
+        children: [
+          { title: 'Internal Training', url: 'https://eclipsetest-int.phila.gov/phltraining/int/lms/#menuPaneUseKey=1013343_2', icon: '🖥️', blob: '#5a7bff' },
+          { title: 'Public Training', url: 'https://eclipsetest-ext.phila.gov/phltraining/pub/lms/Login.aspx', icon: '👥', blob: '#34c759' },
+          { title: 'Config Training', url: 'https://eclipsetest-int.phila.gov/phltraining/int/config/Login.aspx', icon: '⚙️', blob: '#ff3b30' },
+          { title: 'WebUi Public', url: 'https://eclipsetest-ext.phila.gov/phltraining/pub/webui/#', icon: '🌐' }
+        ]
+      },
+      {
+        title: 'Posse Production',
+        icon: '🚀',
+        blob: '#ff4081',
+        children: [
+          { title: 'Internal Production', url: 'https://eclipseprod.phila.gov/phillylmsprod/int/lms/Default.aspx#menuPaneUseKey=1013343_2', icon: '🖥️', blob: '#5a7bff' },
+          { title: 'Public Production', url: 'https://eclipse.phila.gov/phillylmsprod/pub/lms/Login.aspx', icon: '👥', blob: '#34c759' },
+          { title: 'Config Production', url: 'https://eclipseprod.phila.gov/phillylmsprod/int/config/Login.aspx', icon: '⚙️', blob: '#ff3b30' }
+        ]
+      }
+    ]
+  },
+  { 
+    title: 'Resources', 
+    icon: '📂', 
+    blob: '#5a7bff',
+    children: [
+      { title: 'Kronos', url: 'https://philalni.kronos.net/wfcstatic/applications/navigator/html5/dist/container/index.html?version=8.1.9.392#/', icon: '🕒' },
+      { title: 'One Philly', url: 'https://ess-onephilly.phila.gov/OA_HTML/AppsLocalLogin.jsp', icon: '💰' },
+      { title: 'Jira', url: 'https://computronix.atlassian.net/servicedesk/customer/portals', icon: '🐞' },
+      {title: 'Smarter U', url: 'https://philadelphia.smarteru.com/remote-login/login.cfm', icon: '🎓'},
+      {title: 'Metabase Dashboard', url: 'http://li-metabase.city.phila.local/', icon: '📊'},
+      {title: 'Rise 360', url: 'https://id.articulate.com/#eyJhdXRob3JpemVRdWVyeSI6eyJjbGllbnRfaWQiOiIwb2FzbWJtbDd0ajhoQTg0QTM1NyIsInNjb3BlIjoib3BlbmlkIG9mZmxpbmVfYWNjZXNzIHByb2ZpbGUgZW1haWwgdXNlcl9zdWJzY3JpcHRpb24iLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vcmlzZS5hcnRpY3VsYXRlLmNvbS9tYW5hZ2UvYXBpL2F1dGgvYXV0aC1jYWxsYmFjayIsImNvZGVfY2hhbGxlbmdlIjoiYlZVN0htdlhHaS1KZV9QQ3J2VmRaX2ZDeXl0dW5WTmtxUWQ2UEpMeGpmRSIsImNvZGVfY2hhbGxlbmdlX21ldGhvZCI6IlMyNTYiLCJzdGF0ZSI6InRKNTIzZjdVb2JZbkppQTVzOUVmdEp6M09DZFc0am5TZ3pxZjdpV01uelkiLCJyZXNvdXJjZSI6Imh0dHBzOi8vcmlzZS5hcnRpY3VsYXRlLmNvbS9tYW5hZ2UifX0=', icon: '📝'},
+      {title: 'AppExtender', url: 'https://imaging/wx/', icon: '📐'},
+      {title: 'Wrike', url: 'https://login.wrike.com/login/?redirectUrl=%2Fworkspace.htm%3Facc%3D2747306%23folder%2F1038091867%2Flist%3Ffilters%3Dstatus%253Dactive%26showDescendants%3D0%26sortOrder%3D10%26spaceId%3D1038091867%26viewId%3D134351502', icon: '✅'},
+      {title: 'Tawk', url: 'https://dashboard.tawk.to/login#/dashboard/60e8b093d6e7610a49aa8609', icon: '💬'},
+      {title: 'QLess', url: 'https://merchant.us2.qless.com/login/', icon: '⏳'},
+
+    ] 
+  },
+  { 
+    title: 'Sharepoints', 
+    icon: '📂', 
+    blob: '#5a7bff',
+    children: [
+      {title: 'CIU', url: 'https://phila.sharepoint.com/sites/li/ConstructionInspectionsUnit/Shared%20Documents/Forms/AllItems.aspx?viewpath=%2Fsites%2Fli%2FConstructionInspectionsUnit%2FShared%20Documents%2FForms%2FAllItems%2Easpx&viewid=28dcc6a5%2D8b88%2D4585%2Db46c%2Db1c20bcb146d', icon: '🛠️' },
+      {title: 'CDU', url: 'https://phila.sharepoint.com/sites/li/CodeDevSP', icon: '🏛️' },
+      {title: 'CX', url: 'https://cxcanada.sharepoint.com/sites/Philly/Shared%20Documents/Forms/AllItems.aspx?csf=1&web=1&e=M5khny&CID=ad5883a1%2D30a7%2D8000%2D225d%2D4b30a7d91ed5&cidOR=SPO&FolderCTID=0x01200067AF5C4867E0844DBE8865D1C6E239AE&id=%2Fsites%2FPhilly%2FShared%20Documents%2FeClipse%20maintenance%20and%20support%2FRelease%20Information%2FStatus%20Reviews', icon: '💻' }
+    ] 
+  },
+  { 
+    title: 'City Sites', 
+    icon: '📂', 
+    blob: '#6e5494' ,
+    children: [
+      {title: 'L&I', url: 'https://www.phila.gov/departments/department-of-licenses-and-inspections/', icon: '🗝️' },
+      {title: 'Atlas', url: 'https://atlas.phila.gov/', icon: '🗺️' },
+      {title: 'Service Directory', url: 'https://www.phila.gov/service-directory/', icon: '📒' },
+      {title: 'Publications & Forms', url: 'https://www.phila.gov/documents/', icon: '📋' },
+      {title: 'Permit App Tracker', url: 'https://www.phila.gov/li-permit-tracker/'},
+      {title: 'ARCS TRB', url: 'https://tax-review-board.phila.gov/auth/', icon: '💵'},
+      {title: 'Phila Dox', url: 'http://pdx-app01/recorder/web/login.jsp', icon: '📜'},
+      {title: 'Philly Code', url: 'https://codelibrary.amlegal.com/codes/philadelphia/latest/overview', icon: '📝'},
+      {title: 'Philly Legislation', url: 'https://phila.legistar.com/Legislation.aspx', icon: '⚖️'}
+    ] 
+  },
+  { 
+    title: 'Maps', 
+    icon: '📂', 
+    blob: '#5a7bff',
+    children: [
+      {title: 'Building ID', url: 'https://phl.maps.arcgis.com/apps/webappviewer/index.html?id=8eb3b947533d40a0952b226ddb4f28ef&I,eclipse,parcelids,building%20ids,BIN=%20', icon: '🏢' },
+      {title: 'Street Closures', url: 'https://atlas.phila.gov/', icon: '🚧' },
+      {title: 'Inspector Assignment', url: 'https://phl.maps.arcgis.com/sharing/oauth2/authorize?canHandleCrossOrgSignin=true&client_id=arcgisonline&response_type=code&state=%7B%22portalUrl%22%3A%22https%3A%2F%2Fphl.maps.arcgis.com%22%2C%22uid%22%3A%22yy0Gl1tgFnu0p37rxIL_OZ-Vf1Mgffuijrqsz1r6XiU%22%7D&expiration=20160&redirect_uri=https%3A%2F%2Fphl.maps.arcgis.com%2Fapps%2Fwebappviewer%2Findex.html%3Fid%3Dfdb567cd945044958060fd9f2dabedee&redirectToUserOrgUrl=true&code_challenge=QrZtKnwGjGRxwoio3OacGihX1LKgW78pznrkgdT3jeQ&code_challenge_method=S256', icon: '🕵️‍♂️' },
+      {title: 'Open Maps', url: 'https://openmaps.phila.gov/', icon: '🏙️' },
+      {title: 'Waterway Map', url: 'https://phl.maps.arcgis.com/sharing/oauth2/authorize?client_id=arcgisonline&response_type=code&state=%7B%22portalUrl%22%3A%22https%3A%2F%2Fphl.maps.arcgis.com%22%2C%22uid%22%3A%22YoIOIevGYh0mTBYo-ZgpwhXXnrhBX1u6bsn545o5Cqk%22%7D&expiration=20160&locale=en-us&redirect_uri=https%3A%2F%2Fphl.maps.arcgis.com%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D982c9a2da788443eb215779cf0484587%26extent%3D-75.4638%252C39.8053%252C-74.7857%252C40.1197&redirectToUserOrgUrl=true&code_challenge=uHsZAcbsgQCGDDp6j7BLwTn2-6ZnsoGGFd4qrZ6lfQs&code_challenge_method=S256', icon: '🌊' },
+      {title: 'Atlas', url: 'https://atlas.phila.gov/', icon: '📍'},
+      {title: 'Google Maps', url: 'https://www.google.com/maps', icon: '🧭'} 
+  ]
+  },
+  { 
+    title: 'Forms', 
+    icon: '📂', 
+    blob: '#6e5494',
+    children: [
+      {title: 'Internal Eclipse Issue', url: 'https://form.jotform.com/211546744291053', icon: '🐞'},
+      {title: 'Customer Feedback', url: 'https://form.jotform.com/202103727154041', icon: '🗣️'},
+      {title: 'Electrical Inspection Agency', url: 'https://form.jotform.com/PhillyLI/EIAissue', icon: '🔌'},
+      {title: 'Violation Catalog Update', url: 'https://form.jotform.com/213635633826055', icon: '⚠️'},
+      {title: 'Notice of Completed Repairs', url: 'https://form.jotform.com/200817695228057', icon: '🔧'},
+      {title: 'GIS Request', url: 'https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjI3NDczMDYsInRhc2tGb3JtSWQiOjExMDUxODh9CTQ4NDU4MDU5MDg4MDYJMDJhMDE5NjAzMGM0NWNkMTM1ODhhZDNkNzFhNzIwMDI4YjhjNjIzMWQzMjAzNTUyM2RmMGM1MmJjNTE0NDA5NA==', icon: '🗺️'},
+      {title: 'Eclipse Change Request', url: 'https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjI3NDczMDYsInRhc2tGb3JtSWQiOjE0MzY5NDV9CTQ4Njg3NzgyMjgwNjIJOTUzNjQ3ZWY5MGViMTRjZThjOGY5Y2UyZWQxMzc0NmFhNjk4NzM3MDNkMzQ2NzA4OTA3YTcwZWYzN2JiZGY4Yg==', icon: '🆕'},
+      {title: 'TTDU Request', url: 'https://form.jotform.com/231594382887168', icon: '📚'}
+    ]
+  },
+  {
+    title: 'Atlas Phones/IVR',
+    icon: '📂', 
+    blob: '#6e5494',
+    children: [
+        {title: 'Production', url: 'https://phila.myatlasinsight.com/LCI/Atlas.Insight/#login', icon: '📱'},
+        {title: 'Test', url: 'https://philatest.myatlasinsight.com/LCI/Atlas.Insight/#login', icon: '📴'},
+        {title: 'Relay', url: 'https://www.myrelayportal.com/#login', icon: '📞'}
+  ]
+  },
+  {
+    title: 'My Stuff',
+    icon: '📂', 
+    blob: '#6e5494',
+    children: [
+        {title: 'Github', url: 'https://github.com/MarkE63Ward?tab=repositories'},
+        {title: 'License Issuance Checklist', url: 'https://marke63ward.github.io/License-Issuance-Checklist/'},
+        {title: 'Job Class & Pay Range Lookup', url: 'https://marke63ward.github.io/Philadelphia-Job-Class-Pay-Range-Lookup/'},
+        {title: 'DC 47 Contract Salary Increase Calculator', url: 'https://marke63ward.github.io/dc47-contract-increase-calculator/'},
+        {title: 'Employee Salary Lookup', url: 'https://marke63ward.github.io/employee-salary-lookup/'},
+        {title: 'DC 47 2186 Site', url: 'https://www.afscme2186.org/'}
+  ]
+  }
+  
+];
+
+
+
+
+const grid = document.getElementById('cards');
+const backBtn = document.getElementById('backBtn');
+
+let navStack = [];
+// Top date/time
+function updateTopTime(){
+  const now = new Date();
+  const options = {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  };
+  const el = document.getElementById('topTime');
+  if(el) el.textContent = now.toLocaleString(undefined, options);
+}
+updateTopTime();
+setInterval(updateTopTime, 60000);
+
+function renderCards(list){
+  grid.innerHTML = '';
+  list.forEach(b => {
+    const card = document.createElement(b.url ? 'a' : 'div');
+    card.className = 'card';
+    card.tabIndex = 0;
+    if(b.url){
+      card.href = b.url;
+      card.target = '_blank';
+      card.rel = 'noopener';
+    }
+    card.innerHTML = `
+  ${b.icon ? `<span class="icon">${b.icon}</span>` : ''}
+  <div class="meta">
+    <span class="title">${b.title}</span>
+  </div>
+  <span class="blob" style="--blob:${b.blob || '#5a7bff'}"></span>
+`;
+
+    grid.appendChild(card);
+
+    if(b.children){
+      card.addEventListener('click', e=>{
+        e.preventDefault();
+        navStack.push(list); // save current level
+        renderCards(b.children);
+        backBtn.style.display = 'inline-block';
+      });
+    }
+  });
+}
+
+// Back button
+backBtn.addEventListener('click', ()=>{
+  const prev = navStack.pop();
+  if(prev){
+    renderCards(prev);
+    if(navStack.length===0) backBtn.style.display='none';
+  }
+});
+
+renderCards(bookmarks);
+
+// Search shortcut
+const q = document.getElementById('q');
+window.addEventListener('keydown', (e)=>{ if(e.key==='/' && document.activeElement!==q){ e.preventDefault(); q.focus(); } });
+window.addEventListener('load', ()=> q.focus());
+
+//Theme Button
+const themeToggle = document.getElementById('themeToggle');
+
+const applyTheme = t => document.documentElement.setAttribute('data-theme', t);
+
+// default to dark if nothing saved
+const saved = localStorage.getItem('theme');
+applyTheme(saved || 'dark');
+
+themeToggle.addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  localStorage.setItem('theme', next);
+});
+
+//Quickbase Button
+const quickbaseBtn = document.getElementById('quickbaseBtn');
+quickbaseBtn.addEventListener('click', () => {
+  window.open('https://phl-cao.quickbase.com/nav/app/bu9dn5ktp/action/appoverview?from=myqb', '_blank');
+});
+// Calendar logic
+const calendarModal = document.getElementById("calendarModal");
+const calendarToggle = document.getElementById("calendarToggle");
+const closeCalendar = document.getElementById("closeCalendar");
+const calendarEl = document.getElementById("calendar");
+const calendarTitle = document.getElementById("calendarTitle");
+const prevMonthBtn = document.getElementById("prevMonth");
+const nextMonthBtn = document.getElementById("nextMonth");
+
+let currentDate = new Date();
+
+calendarToggle.addEventListener("click", () => {
+  buildCalendar(currentDate);
+  calendarModal.style.display = "flex";
+});
+
+closeCalendar.addEventListener("click", (e) => {
+  e.stopPropagation();
+  calendarModal.style.display = "none";
+});
+
+calendarModal.addEventListener("click", (e) => {
+  if (e.target === calendarModal) {
+    calendarModal.style.display = "none";
+  }
+});
+
+prevMonthBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  currentDate.setMonth(currentDate.getMonth() - 1);
+  buildCalendar(currentDate);
+});
+
+nextMonthBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  buildCalendar(currentDate);
+});
+
+function buildCalendar(date) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+
+  calendarEl.innerHTML = "";
+  calendarTitle.textContent = date.toLocaleString("default", { month: "long", year: "numeric" });
+
+  // Weekday headers
+  ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d => {
+    const div = document.createElement("div");
+    div.textContent = d;
+    div.className = "header";
+    calendarEl.appendChild(div);
+  });
+
+  // Empty slots
+  for (let i=0; i<firstDay; i++) {
+    calendarEl.appendChild(document.createElement("div"));
+  }
+
+  // Days
+  for (let d=1; d<=daysInMonth; d++) {
+    const div = document.createElement("div");
+    div.textContent = d;
+    if (
+      d===today.getDate() &&
+      month===today.getMonth() &&
+      year===today.getFullYear()
+    ) {
+      div.className = "today";
+    }
+    calendarEl.appendChild(div);
+  }
+}
+
+</script>
+</body>
+</html>
+
