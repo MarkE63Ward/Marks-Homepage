@@ -230,6 +230,7 @@ body{
 
   <div class="controls">
     <button id="quickbaseBtn" class="btn" title="Open Quickbase">🗄️ Quickbase</button>
+    <button id="brdBtn" class="btn" title="BRD Creator">📄 BRD Creator</button>
     <button id="calendarToggle" class="btn" title="Show calendar">📅 Calendar</button>
     <button id="themeToggle" class="btn" title="Toggle light/dark">🌓 Theme</button>
 </div>
@@ -353,7 +354,7 @@ const bookmarks = [
     blob: '#5a7bff',
     children: [
       {title: 'Building ID', url: 'https://phl.maps.arcgis.com/apps/webappviewer/index.html?id=8eb3b947533d40a0952b226ddb4f28ef&I,eclipse,parcelids,building%20ids,BIN=%20', icon: '🏢' },
-      {title: 'Street Closures', url: 'https://atlas.phila.gov/', icon: '🚧' },
+      {title: 'Street Closures', url: 'https://phl.maps.arcgis.com/apps/webappviewer/index.html?id=e41853e3f1374df5aecc7f4dd09a55d4', icon: '🚧' },
       {title: 'Inspector Assignment', url: 'https://phl.maps.arcgis.com/sharing/oauth2/authorize?canHandleCrossOrgSignin=true&client_id=arcgisonline&response_type=code&state=%7B%22portalUrl%22%3A%22https%3A%2F%2Fphl.maps.arcgis.com%22%2C%22uid%22%3A%22yy0Gl1tgFnu0p37rxIL_OZ-Vf1Mgffuijrqsz1r6XiU%22%7D&expiration=20160&redirect_uri=https%3A%2F%2Fphl.maps.arcgis.com%2Fapps%2Fwebappviewer%2Findex.html%3Fid%3Dfdb567cd945044958060fd9f2dabedee&redirectToUserOrgUrl=true&code_challenge=QrZtKnwGjGRxwoio3OacGihX1LKgW78pznrkgdT3jeQ&code_challenge_method=S256', icon: '🕵️‍♂️' },
       {title: 'Open Maps', url: 'https://openmaps.phila.gov/', icon: '🏙️' },
       {title: 'Waterway Map', url: 'https://phl.maps.arcgis.com/sharing/oauth2/authorize?client_id=arcgisonline&response_type=code&state=%7B%22portalUrl%22%3A%22https%3A%2F%2Fphl.maps.arcgis.com%22%2C%22uid%22%3A%22YoIOIevGYh0mTBYo-ZgpwhXXnrhBX1u6bsn545o5Cqk%22%7D&expiration=20160&locale=en-us&redirect_uri=https%3A%2F%2Fphl.maps.arcgis.com%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D982c9a2da788443eb215779cf0484587%26extent%3D-75.4638%252C39.8053%252C-74.7857%252C40.1197&redirectToUserOrgUrl=true&code_challenge=uHsZAcbsgQCGDDp6j7BLwTn2-6ZnsoGGFd4qrZ6lfQs&code_challenge_method=S256', icon: '🌊' },
@@ -497,6 +498,12 @@ const quickbaseBtn = document.getElementById('quickbaseBtn');
 quickbaseBtn.addEventListener('click', () => {
   window.open('https://phl-cao.quickbase.com/nav/app/bu9dn5ktp/action/appoverview?from=myqb', '_blank');
 });
+//BRD Creator Button
+  const brdBtn = document.getElementById('brdBtn');
+brdBtn.addEventListener('click', () => {
+  window.open('https://marke63ward.github.io/License-Issuance-Checklist/', '_blank');
+});
+
 // Calendar logic
 const calendarModal = document.getElementById("calendarModal");
 const calendarToggle = document.getElementById("calendarToggle");
@@ -577,4 +584,5 @@ function buildCalendar(date) {
 </script>
 </body>
 </html>
+
 
