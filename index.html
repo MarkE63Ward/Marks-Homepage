@@ -230,6 +230,7 @@ body{
 
   <div class="controls">
     <button id="quickbaseBtn" class="btn" title="Open Quickbase">🗄️ Quickbase</button>
+    <button id="meetingnotesBtn" class="btn" title="Meeting Notes">📝 Meeting Notes</button>
     <button id="brdBtn" class="btn" title="BRD Creator">📄 BRD Creator</button>
     <button id="calendarToggle" class="btn" title="Show calendar">📅 Calendar</button>
     <button id="themeToggle" class="btn" title="Toggle light/dark">🌓 Theme</button>
@@ -499,6 +500,11 @@ const quickbaseBtn = document.getElementById('quickbaseBtn');
 quickbaseBtn.addEventListener('click', () => {
   window.open('https://phl-cao.quickbase.com/nav/app/bu9dn5ktp/action/appoverview?from=myqb', '_blank');
 });
+  //Meeting Notes Button
+  const meetingnotesBtn = document.getElementById('meetingnotesBtn');
+meetingnotesBtn.addEventListener('click', () => {
+  window.open('https://markevansjrcityphila-evansm1.github.io/CDU-Meeting-Notes/', '_blank');
+});
 //BRD Creator Button
   const brdBtn = document.getElementById('brdBtn');
 brdBtn.addEventListener('click', () => {
@@ -585,6 +591,7 @@ function buildCalendar(date) {
 </script>
 </body>
 </html>
+
 
 
 
