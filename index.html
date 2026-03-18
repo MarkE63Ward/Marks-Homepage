@@ -229,7 +229,7 @@ footer{ margin-top: 28px; color: var(--muted); font-size: 13px; text-align:cente
 </head>
 <body class="clickup-chrome-ext_installed">
 <div class="wrap">
-  <div id="topTime" class="top-time">Wednesday, March 18, 2026 at 10:04 AM</div>
+  <div id="topTime" class="top-time">Wednesday, March 18, 2026 at 10:05 AM</div>
 
   <header>
     <div class="brand" title="Mark's Personal Homepage">
@@ -264,7 +264,7 @@ footer{ margin-top: 28px; color: var(--muted); font-size: 13px; text-align:cente
     <span class="edit-status" id="editStatus">⏳ Saving to GitHub…</span>
   </div>
 
-  <button id="backBtn" class="back-btn">← Back</button>
+  <button id="backBtn" class="back-btn" style="display: none;">← Back</button>
   <div class="grid" id="cards" aria-label="Bookmarks"><div class="card edit-mode" tabindex="0">
       
       <div class="card-edit-actions">
@@ -361,18 +361,6 @@ footer{ margin-top: 28px; color: var(--muted); font-size: 13px; text-align:cente
 
       </div>
       <span class="blob" style="--blob:#6e5494"></span>
-    </div><div class="card edit-mode" tabindex="0">
-      
-      <div class="card-edit-actions">
-        <button class="edit-icon-btn edit" data-idx="8" title="Edit">✎</button>
-        <button class="edit-icon-btn del" data-idx="8" title="Delete">🗑</button>
-      </div>
-      <span class="icon">📂</span>
-      <div class="meta">
-        <span class="title">Test</span>
-
-      </div>
-      <span class="blob" style="--blob:#5a7bff"></span>
     </div></div>
 
   <footer>
@@ -828,11 +816,6 @@ let bookmarks = [
         "icon": "🔐"
       }
     ]
-  },
-  {
-    "title": "Test",
-    "icon": "📂",
-    "children": []
   }
 ];
 
