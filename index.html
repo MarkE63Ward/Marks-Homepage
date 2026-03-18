@@ -17,6 +17,8 @@
   --radius: 18px;
   --gap: 16px;
   --maxw: 1000px;
+  --danger: #ff3b30;
+  --success: #34c759;
 }
 :root[data-theme="light"] {
   --bg: #f6f7fb;
@@ -26,17 +28,15 @@
   --card: #ffffff;
   --ring: #3556f3;
   --shadow: 0 10px 30px rgba(0,0,0,.1);
-  --radius: 18px; /* keep card roundness! */
-  --gap: 16px;
-  --maxw: 1000px;
 }
+*,*::before,*::after{box-sizing:border-box;}
 body{
-  margin:10px;
+  margin:0;
   font: 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   background: radial-gradient(1200px 800px at 70% -100px, rgba(90,123,255,.15), transparent), var(--bg);
   color: var(--text);
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   justify-content:flex-start;
   padding: 50px;
   min-height: 100vh;
@@ -45,7 +45,7 @@ body{
 .wrap{ width: 100%; max-width: var(--maxw); }
 header{
   display:flex; align-items:center; justify-content:space-between; gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 20px; flex-wrap: wrap;
 }
 .brand{
   display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.2px;
@@ -53,12 +53,16 @@ header{
 .brand .dot{ width:10px; height:10px; border-radius:50%; background:linear-gradient(135deg, #5a7bff, #00d4ff); box-shadow: 0 0 18px rgba(58,87,232,.8); }
 .muted{ color: var(--muted); }
 
-.controls{ display:flex; align-items:center; gap:10px; }
+.controls{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .btn{
   appearance:none; border:1px solid rgba(255,255,255,.08); background:var(--bg-soft); color:var(--text);
   padding:10px 14px; border-radius: 999px; cursor:pointer; transition:.2s ease; box-shadow: var(--shadow);
+  font-size: 14px;
 }
 .btn:hover{ transform: translateY(-1px); }
+.btn.danger{ background: var(--danger); color:#fff; border-color: transparent; }
+.btn.success{ background: var(--success); color:#fff; border-color: transparent; }
+.btn.primary{ background: var(--ring); color:#fff; border-color: transparent; }
 
 .search-card{
   background: var(--card);
@@ -82,7 +86,7 @@ form.search { display:flex; gap:10px; align-items:center; }
 }
 .search button{
   border: none; background: var(--ring); color: white; padding: 14px 18px; border-radius: 12px;
-  font-weight: 600; cursor:pointer; transition:.2s ease; box-shadow: var(--shadow);
+  font-weight: 600; cursor:pointer; transition:.2s ease; box-shadow: var(--shadow); white-space:nowrap;
 }
 .search button:hover{ filter: brightness(1.05); transform: translateY(-1px); }
 
@@ -90,6 +94,7 @@ form.search { display:flex; gap:10px; align-items:center; }
   display:flex;
   flex-wrap: wrap;
   gap: var(--gap);
+  justify-content: center;
 }
 .card{
   position: relative;
@@ -113,145 +118,162 @@ form.search { display:flex; gap:10px; align-items:center; }
 }
 .icon{
   width: 36px; height:36px; display:grid; place-items:center; border-radius: 12px; background: color-mix(in oklab, var(--ring) 18%, transparent);
-  font-size: 20px;
+  font-size: 20px; flex-shrink:0;
 }
-.card .meta{ display:flex; flex-direction:column; }
-.title{ font-weight: 700; font-size: 16px; }
+.card .meta{ display:flex; flex-direction:column; flex:1; min-width:0; }
+.title{ font-weight: 700; font-size: 16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Edit mode card overlay */
+.card.edit-mode{ border: 2px dashed var(--ring); }
+.card-edit-actions{
+  display:none; position:absolute; top:6px; right:6px; gap:4px; z-index:10;
+}
+.card.edit-mode .card-edit-actions{ display:flex; }
+.edit-icon-btn{
+  width:26px;height:26px;border-radius:8px;border:none;cursor:pointer;font-size:13px;
+  display:grid;place-items:center;transition:.15s;
+}
+.edit-icon-btn.del{ background:var(--danger); color:#fff; }
+.edit-icon-btn.edit{ background:var(--ring); color:#fff; }
 
 .back-btn{
   display:none;
   margin-bottom: 16px;
   padding: 10px 16px;
-  background: #3a57e8;   /* bright blue */
-  color: #fff;           /* white text */
+  background: #3a57e8;
+  color: #fff;
   border: none;
   border-radius: 12px;
   cursor:pointer;
   box-shadow: var(--shadow);
+  font-size:14px;
 }
 .back-btn:hover{ transform: translateY(-1px); }
 
-footer{ margin-top: 28px; color: var(--muted); font-size: 13px; text-align:center; }
-footer a{ color: inherit; }
-/* Top centered date/time */
-.top-time{
-  width: 100%;
-  text-align: center;
-  font-weight: 700;
-  font-size: 32px;
-  margin-bottom: 50px;
-}
-
-/* Center the whole page content horizontally */
-body{
-  /* REPLACE align-items:flex-start with this: */
-  align-items: center;
-}
-
-/* Center the cards grid */
-.grid{
-  justify-content: center;
-}
-.calendar-modal {
-  display: none; /* hidden until toggled */
-  position: fixed;
-  z-index: 1000;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  align-items: center;
-  justify-content: center;
-}
-
-.calendar-content {
-  background: var(--bg-soft);
-  color: var(--text);
-  padding: 20px;
+/* Edit toolbar */
+#editToolbar{
+  display:none;
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,.08);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  max-width: 340px;
-  width: 100%;
-}
-
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  gap: 10px;
   align-items: center;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+#editToolbar.visible{ display:flex; }
+.edit-status{ font-size:13px; color: var(--muted); margin-left:auto; }
+
+/* Modal base */
+.modal{
+  display:none; position:fixed; z-index:1000; inset:0;
+  background:rgba(0,0,0,.65); align-items:center; justify-content:center;
+  padding: 20px;
+}
+.modal.open{ display:flex; }
+.modal-box{
+  background:var(--bg-soft); color:var(--text);
+  padding:28px; border-radius:var(--radius); box-shadow:var(--shadow);
+  width:100%; max-width:420px;
+}
+.modal-box h3{ margin:0 0 16px; font-size:18px; }
+.modal-box label{ display:block; font-size:13px; color:var(--muted); margin-bottom:4px; margin-top:12px; }
+.modal-box input, .modal-box select{
+  width:100%; padding:10px 12px; border-radius:10px;
+  border:1.5px solid rgba(255,255,255,.1); background:var(--card); color:var(--text);
+  font-size:15px; outline:none;
+}
+.modal-box input:focus{ border-color:var(--ring); }
+.modal-actions{ display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
+
+/* Token modal */
+#tokenModal .modal-box{ max-width:480px; }
+#tokenModal p{ font-size:14px; color:var(--muted); margin:8px 0; line-height:1.6; }
+#tokenModal a{ color: #5a7bff; }
+
+/* Calendar modal */
+.calendar-modal {
+  display: none; position: fixed; z-index: 1000; inset: 0;
+  background: rgba(0,0,0,0.6); align-items: center; justify-content: center;
+}
+.calendar-content {
+  background: var(--bg-soft); color: var(--text); padding: 20px;
+  border-radius: var(--radius); box-shadow: var(--shadow); max-width: 340px; width: 100%;
+}
+.calendar-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+}
+.calendar-header #calendarTitle { font-weight: bold; font-size: 16px; flex: 1; text-align: center; }
+.close-btn { background: #ff3b30; color: white; }
+#calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+#calendar div { padding: 8px; border-radius: 6px; text-align: center; }
+#calendar .header { font-weight: bold; }
+#calendar .today { background: var(--ring); color: white; font-weight: bold; border-radius: 6px; }
+
+/* Toast */
+#toast{
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:#222d50; color:#fff; padding:12px 22px; border-radius:999px;
+  font-size:14px; box-shadow:var(--shadow); transition: transform .3s ease, opacity .3s ease;
+  opacity:0; pointer-events:none; z-index:9999; white-space:nowrap;
+}
+#toast.show{ transform:translateX(-50%) translateY(0); opacity:1; }
+#toast.error{ background: var(--danger); }
+#toast.ok{ background: #1a5c30; }
+
+.top-time{
+  width: 100%; text-align: center; font-weight: 700; font-size: 32px; margin-bottom: 50px;
 }
 
-.calendar-header #calendarTitle {
-  font-weight: bold;
-  font-size: 16px;
-  flex: 1;
-  text-align: center;
-}
-
-.close-btn {
-  background: #ff3b30;
-  color: white;
-  margin-left: 8px;
-}
-
-#calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-}
-
-#calendar div {
-  padding: 8px;
-  border-radius: 6px;
-  text-align: center;
-}
-
-#calendar .header {
-  font-weight: bold;
-}
-
-#calendar .today {
-  background: var(--ring);
-  color: white;
-  font-weight: bold;
-  border-radius: 6px;
-}
-
-
-
+footer{ margin-top: 28px; color: var(--muted); font-size: 13px; text-align:center; }
 </style>
 </head>
 <body>
 <div class="wrap">
-<div id="topTime" class="top-time">Loading date…</div>
-<header>
-  <div class="brand" title="Mark's Personal Homepage">
-    <span class="dot" aria-hidden="true"></span>
-    <span>Mark's Homepage</span>
+  <div id="topTime" class="top-time">Loading date…</div>
+
+  <header>
+    <div class="brand" title="Mark's Personal Homepage">
+      <span class="dot" aria-hidden="true"></span>
+      <span>Mark's Homepage</span>
+    </div>
+    <div class="controls">
+      <button id="quickbaseBtn" class="btn" title="Open Quickbase">🗄️ Quickbase</button>
+      <button id="meetingnotesBtn" class="btn" title="Meeting Notes">📝 Meeting Notes</button>
+      <button id="brdBtn" class="btn" title="BRD Creator">📄 BRD Creator</button>
+      <button id="calendarToggle" class="btn" title="Show calendar">📅 Calendar</button>
+      <button id="themeToggle" class="btn" title="Toggle light/dark">🌓 Theme</button>
+      <button id="editToggleBtn" class="btn" title="Edit bookmarks">✏️ Edit</button>
+    </div>
+  </header>
+
+  <section class="search-card">
+    <form class="search" action="https://www.google.com/search" method="GET" role="search" aria-label="Google search">
+      <input id="q" type="text" name="q" placeholder="Search Google…" autocomplete="off" spellcheck="false" aria-label="Search" />
+      <button type="submit" aria-label="Search">Search</button>
+      <input type="hidden" name="hl" value="en" />
+    </form>
+    <div class="muted" style="margin-top:10px; font-size:15px">Tips — Use <code>site:</code> to search within a website | Use quotes for exact matches | Use <code>filetype:</code> to find documents.</div>
+  </section>
+
+  <!-- Edit toolbar -->
+  <div id="editToolbar">
+    <button class="btn primary" id="addBookmarkBtn">＋ Add Bookmark</button>
+    <button class="btn primary" id="addFolderBtn">📁 Add Folder</button>
+    <button class="btn success" id="saveGithubBtn">☁️ Save to GitHub</button>
+    <button class="btn danger" id="cancelEditBtn">✖ Cancel</button>
+    <span class="edit-status" id="editStatus">Edit mode — click ✎ to rename, 🗑 to delete</span>
   </div>
 
-  <div class="controls">
-    <button id="quickbaseBtn" class="btn" title="Open Quickbase">🗄️ Quickbase</button>
-    <button id="meetingnotesBtn" class="btn" title="Meeting Notes">📝 Meeting Notes</button>
-    <button id="brdBtn" class="btn" title="BRD Creator">📄 BRD Creator</button>
-    <button id="calendarToggle" class="btn" title="Show calendar">📅 Calendar</button>
-    <button id="themeToggle" class="btn" title="Toggle light/dark">🌓 Theme</button>
+  <button id="backBtn" class="back-btn">← Back</button>
+  <div class="grid" id="cards" aria-label="Bookmarks"></div>
+
+  <footer>
+    <div>✏️ Click <strong>Edit</strong> to manage bookmarks. Changes sync to GitHub automatically.</div>
+  </footer>
 </div>
-</header>
 
-<section class="search-card">
-  <form class="search" action="https://www.google.com/search" method="GET" role="search" aria-label="Google search">
-    <input id="q" type="text" name="q" placeholder="Search Google…" autocomplete="off" spellcheck="false" aria-label="Search" />
-    <button type="submit" aria-label="Search">Search</button>
-    <input type="hidden" name="hl" value="en" />
-  </form>
-  <div class="muted" style="margin-top:10px; font-size:15px">Tips- Use site: to search within a website | Use quotes for exact matches | Use filetype: to find documents.</div>
-</section>
-
-<button id="backBtn" class="back-btn">← Back</button>
-<div class="grid" id="cards" aria-label="Bookmarks"></div>
-
-<footer>
-  <div>Customize your bookmarks by editing the <code>bookmarks</code> list in this file. ✨</div>
-</footer>
 <!-- Calendar Modal -->
 <div id="calendarModal" class="calendar-modal">
   <div class="calendar-content">
@@ -265,329 +287,467 @@ body{
   </div>
 </div>
 
+<!-- Token Setup Modal -->
+<div id="tokenModal" class="modal">
+  <div class="modal-box">
+    <h3>🔑 GitHub Setup</h3>
+    <p>To save bookmarks to GitHub, paste a <strong>Personal Access Token</strong> below. It's stored only in this browser — never in your code.</p>
+    <p><strong>How to get one:</strong> GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → check <code>repo</code> scope → copy it.</p>
+    <p><a href="https://github.com/settings/tokens" target="_blank" rel="noopener">→ Open GitHub Token Settings</a></p>
+    <label>Personal Access Token</label>
+    <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+    <div class="modal-actions">
+      <button class="btn" id="tokenCancelBtn">Cancel</button>
+      <button class="btn primary" id="tokenSaveBtn">Save Token</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Bookmark Modal -->
+<div id="bookmarkModal" class="modal">
+  <div class="modal-box">
+    <h3 id="bookmarkModalTitle">Add Bookmark</h3>
+    <label>Title</label>
+    <input type="text" id="bmTitle" placeholder="e.g. Google" />
+    <label>URL</label>
+    <input type="text" id="bmUrl" placeholder="https://..." />
+    <label>Icon (emoji)</label>
+    <input type="text" id="bmIcon" placeholder="🌐" maxlength="4" />
+    <div class="modal-actions">
+      <button class="btn" id="bmCancelBtn">Cancel</button>
+      <button class="btn primary" id="bmSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Folder Modal -->
+<div id="folderModal" class="modal">
+  <div class="modal-box">
+    <h3 id="folderModalTitle">Add Folder</h3>
+    <label>Folder Name</label>
+    <input type="text" id="folderTitle" placeholder="e.g. Work Tools" />
+    <label>Icon (emoji)</label>
+    <input type="text" id="folderIcon" placeholder="📂" maxlength="4" />
+    <div class="modal-actions">
+      <button class="btn" id="folderCancelBtn">Cancel</button>
+      <button class="btn primary" id="folderSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
 <script>
-const bookmarks = [
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const GITHUB_USER = 'MarkE63Ward';
+const GITHUB_REPO = 'Marks-Homepage';
+const GITHUB_FILE = 'index.html';
+const GITHUB_BRANCH = 'main'; // change to 'master' if needed
+
+// ── BOOKMARKS DATA ────────────────────────────────────────────────────────────
+let bookmarks = [
   {
-    title: 'Posse',
-    icon: '📂',
-    blob: '#ff9500',
+    title: 'Posse', icon: '📂', blob: '#ff9500',
     children: [
-      {
-        title: 'Posse Test',
-        icon: '🧪',
-        blob: '#ffcc00',
-        children: [
+      { title: 'Posse Test', icon: '🧪', blob: '#ffcc00', children: [
           { title: 'Internal Test', url: 'https://eclipsetest-int.phila.gov/phluatest/int/lms/#menuPaneUseKey=1013343_2', icon: '🖥️', blob: '#5a7bff' },
           { title: 'Public Test', url: 'https://eclipsetest-ext.phila.gov/phluatest/pub/lms/Login.aspx', icon: '👥', blob: '#34c759' },
           { title: 'Config Test', url: 'https://eclipsetest-int.phila.gov/phluatest/int/config/Login.aspx', icon: '⚙️', blob: '#ff3b30' }
-        ]
-      },
-      {
-        title: 'Posse Training',
-        icon: '🎓',
-        blob: '#00bcd4',
-        children: [
+      ]},
+      { title: 'Posse Training', icon: '🎓', blob: '#00bcd4', children: [
           { title: 'Internal Training', url: 'https://eclipsetest-int.phila.gov/phltraining/int/lms/#menuPaneUseKey=1013343_2', icon: '🖥️', blob: '#5a7bff' },
           { title: 'Public Training', url: 'https://eclipsetest-ext.phila.gov/phltraining/pub/lms/Login.aspx', icon: '👥', blob: '#34c759' },
           { title: 'Config Training', url: 'https://eclipsetest-int.phila.gov/phltraining/int/config/Login.aspx', icon: '⚙️', blob: '#ff3b30' },
           { title: 'WebUi Public', url: 'https://eclipsetest-ext.phila.gov/phltraining/pub/webui/#', icon: '🌐' }
-        ]
-      },
-      {
-        title: 'Posse Production',
-        icon: '🚀',
-        blob: '#ff4081',
-        children: [
+      ]},
+      { title: 'Posse Production', icon: '🚀', blob: '#ff4081', children: [
           { title: 'Internal Production', url: 'https://eclipseprod.phila.gov/phillylmsprod/int/lms/Default.aspx#menuPaneUseKey=1013343_2', icon: '🖥️', blob: '#5a7bff' },
           { title: 'Public Production', url: 'https://eclipse.phila.gov/phillylmsprod/pub/lms/Login.aspx', icon: '👥', blob: '#34c759' },
           { title: 'Config Production', url: 'https://eclipseprod.phila.gov/phillylmsprod/int/config/Login.aspx', icon: '⚙️', blob: '#ff3b30' }
-        ]
-      }
+      ]}
     ]
   },
-  { 
-    title: 'Resources', 
-    icon: '📂', 
-    blob: '#5a7bff',
-    children: [
+  { title: 'Resources', icon: '📂', blob: '#5a7bff', children: [
       { title: 'Kronos', url: 'https://philalni.kronos.net/wfcstatic/applications/navigator/html5/dist/container/index.html?version=8.1.9.392#/', icon: '🕒' },
       { title: 'One Philly', url: 'https://ess-onephilly.phila.gov/OA_HTML/AppsLocalLogin.jsp', icon: '💰' },
       { title: 'Jira', url: 'https://computronix.atlassian.net/servicedesk/customer/portals', icon: '🐞' },
-      {title: 'Smarter U', url: 'https://philadelphia.smarteru.com/remote-login/login.cfm', icon: '🎓'},
-      {title: 'Metabase Dashboard', url: 'http://li-metabase.city.phila.local/', icon: '📊'},
-      {title: 'Rise 360', url: 'https://id.articulate.com/#eyJhdXRob3JpemVRdWVyeSI6eyJjbGllbnRfaWQiOiIwb2FzbWJtbDd0ajhoQTg0QTM1NyIsInNjb3BlIjoib3BlbmlkIG9mZmxpbmVfYWNjZXNzIHByb2ZpbGUgZW1haWwgdXNlcl9zdWJzY3JpcHRpb24iLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vcmlzZS5hcnRpY3VsYXRlLmNvbS9tYW5hZ2UvYXBpL2F1dGgvYXV0aC1jYWxsYmFjayIsImNvZGVfY2hhbGxlbmdlIjoiYlZVN0htdlhHaS1KZV9QQ3J2VmRaX2ZDeXl0dW5WTmtxUWQ2UEpMeGpmRSIsImNvZGVfY2hhbGxlbmdlX21ldGhvZCI6IlMyNTYiLCJzdGF0ZSI6InRKNTIzZjdVb2JZbkppQTVzOUVmdEp6M09DZFc0am5TZ3pxZjdpV01uelkiLCJyZXNvdXJjZSI6Imh0dHBzOi8vcmlzZS5hcnRpY3VsYXRlLmNvbS9tYW5hZ2UifX0=', icon: '📝'},
-      {title: 'AppExtender', url: 'https://imaging/wx/', icon: '📐'},
-      {title: 'Wrike', url: 'https://login.wrike.com/login/?redirectUrl=%2Fworkspace.htm%3Facc%3D2747306%23folder%2F1038091867%2Flist%3Ffilters%3Dstatus%253Dactive%26showDescendants%3D0%26sortOrder%3D10%26spaceId%3D1038091867%26viewId%3D134351502', icon: '✅'},
-      {title: 'Tawk', url: 'https://dashboard.tawk.to/login#/dashboard/60e8b093d6e7610a49aa8609', icon: '💬'},
-      {title: 'QLess', url: 'https://merchant.us2.qless.com/login/', icon: '⏳'},
-
-    ] 
-  },
-  { 
-    title: 'Sharepoints', 
-    icon: '📂', 
-    blob: '#5a7bff',
-    children: [
-      {title: 'CIU', url: 'https://phila.sharepoint.com/sites/li/ConstructionInspectionsUnit/Shared%20Documents/Forms/AllItems.aspx?viewpath=%2Fsites%2Fli%2FConstructionInspectionsUnit%2FShared%20Documents%2FForms%2FAllItems%2Easpx&viewid=28dcc6a5%2D8b88%2D4585%2Db46c%2Db1c20bcb146d', icon: '🛠️' },
-      {title: 'CDU', url: 'https://phila.sharepoint.com/sites/li/CodeDevSP', icon: '🏛️' },
-      {title: 'CX', url: 'https://cxcanada.sharepoint.com/sites/Philly/Shared%20Documents/Forms/AllItems.aspx?csf=1&web=1&e=M5khny&CID=ad5883a1%2D30a7%2D8000%2D225d%2D4b30a7d91ed5&cidOR=SPO&FolderCTID=0x01200067AF5C4867E0844DBE8865D1C6E239AE&id=%2Fsites%2FPhilly%2FShared%20Documents%2FeClipse%20maintenance%20and%20support%2FRelease%20Information%2FStatus%20Reviews', icon: '💻' }
-    ] 
-  },
-  { 
-    title: 'City Sites', 
-    icon: '📂', 
-    blob: '#6e5494' ,
-    children: [
-      {title: 'L&I', url: 'https://www.phila.gov/departments/department-of-licenses-and-inspections/', icon: '🗝️' },
-      {title: 'Atlas', url: 'https://atlas.phila.gov/', icon: '🗺️' },
-      {title: 'Service Directory', url: 'https://www.phila.gov/service-directory/', icon: '📒' },
-      {title: 'Publications & Forms', url: 'https://www.phila.gov/documents/', icon: '📋' },
-      {title: 'Permit App Tracker', url: 'https://www.phila.gov/li-permit-tracker/'},
-      {title: 'ARCS TRB', url: 'https://tax-review-board.phila.gov/auth/', icon: '💵'},
-      {title: 'Phila Dox', url: 'http://pdx-app01/recorder/web/login.jsp', icon: '📜'},
-      {title: 'Philly Code', url: 'https://codelibrary.amlegal.com/codes/philadelphia/latest/overview', icon: '📝'},
-      {title: 'Philly Legislation', url: 'https://phila.legistar.com/Legislation.aspx', icon: '⚖️'}
-    ] 
-  },
-  { 
-    title: 'Maps', 
-    icon: '📂', 
-    blob: '#5a7bff',
-    children: [
-      {title: 'Building ID', url: 'https://bit.ly/eclipse-building-identifier-map', icon: '🏢' },
-      {title: 'Street Closures', url: 'https://phl.maps.arcgis.com/apps/webappviewer/index.html?id=e41853e3f1374df5aecc7f4dd09a55d4', icon: '🚧' },
-      {title: 'Inspector Assignment', url: 'https://phl.maps.arcgis.com/sharing/oauth2/authorize?canHandleCrossOrgSignin=true&client_id=arcgisonline&response_type=code&state=%7B%22portalUrl%22%3A%22https%3A%2F%2Fphl.maps.arcgis.com%22%2C%22uid%22%3A%22yy0Gl1tgFnu0p37rxIL_OZ-Vf1Mgffuijrqsz1r6XiU%22%7D&expiration=20160&redirect_uri=https%3A%2F%2Fphl.maps.arcgis.com%2Fapps%2Fwebappviewer%2Findex.html%3Fid%3Dfdb567cd945044958060fd9f2dabedee&redirectToUserOrgUrl=true&code_challenge=QrZtKnwGjGRxwoio3OacGihX1LKgW78pznrkgdT3jeQ&code_challenge_method=S256', icon: '🕵️‍♂️' },
-      {title: 'Open Maps', url: 'https://openmaps.phila.gov/', icon: '🏙️' },
-      {title: 'Waterway Map', url: 'https://phl.maps.arcgis.com/sharing/oauth2/authorize?client_id=arcgisonline&response_type=code&state=%7B%22portalUrl%22%3A%22https%3A%2F%2Fphl.maps.arcgis.com%22%2C%22uid%22%3A%22YoIOIevGYh0mTBYo-ZgpwhXXnrhBX1u6bsn545o5Cqk%22%7D&expiration=20160&locale=en-us&redirect_uri=https%3A%2F%2Fphl.maps.arcgis.com%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3D982c9a2da788443eb215779cf0484587%26extent%3D-75.4638%252C39.8053%252C-74.7857%252C40.1197&redirectToUserOrgUrl=true&code_challenge=uHsZAcbsgQCGDDp6j7BLwTn2-6ZnsoGGFd4qrZ6lfQs&code_challenge_method=S256', icon: '🌊' },
-      {title: 'Atlas', url: 'https://atlas.phila.gov/', icon: '📍'},
-      {title: 'Google Maps', url: 'https://www.google.com/maps', icon: '🧭'} 
-  ]
-  },
-  { 
-    title: 'Forms', 
-    icon: '📂', 
-    blob: '#6e5494',
-    children: [
-      {title: 'Internal Eclipse Issue', url: 'https://form.jotform.com/211546744291053', icon: '🐞'},
-      {title: 'Customer Feedback', url: 'https://form.jotform.com/202103727154041', icon: '🗣️'},
-      {title: 'Electrical Inspection Agency', url: 'https://form.jotform.com/PhillyLI/EIAissue', icon: '🔌'},
-      {title: 'Violation Catalog Update', url: 'https://form.jotform.com/213635633826055', icon: '⚠️'},
-      {title: 'Notice of Completed Repairs', url: 'https://form.jotform.com/200817695228057', icon: '🔧'},
-      {title: 'GIS Request', url: 'https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjI3NDczMDYsInRhc2tGb3JtSWQiOjExMDUxODh9CTQ4NDU4MDU5MDg4MDYJMDJhMDE5NjAzMGM0NWNkMTM1ODhhZDNkNzFhNzIwMDI4YjhjNjIzMWQzMjAzNTUyM2RmMGM1MmJjNTE0NDA5NA==', icon: '🗺️'},
-      {title: 'Eclipse Change Request', url: 'https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjI3NDczMDYsInRhc2tGb3JtSWQiOjE0MzY5NDV9CTQ4Njg3NzgyMjgwNjIJOTUzNjQ3ZWY5MGViMTRjZThjOGY5Y2UyZWQxMzc0NmFhNjk4NzM3MDNkMzQ2NzA4OTA3YTcwZWYzN2JiZGY4Yg==', icon: '🆕'},
-      {title: 'TTDU Request', url: 'https://form.jotform.com/231594382887168', icon: '📚'}
-    ]
-  },
-  {
-    title: 'Atlas Phones/IVR',
-    icon: '📂', 
-    blob: '#6e5494',
-    children: [
-        {title: 'Production', url: 'https://phila.myatlasinsight.com/LCI/Atlas.Insight/#login', icon: '📱'},
-        {title: 'Test', url: 'https://philatest.myatlasinsight.com/LCI/Atlas.Insight/#login', icon: '📴'},
-        {title: 'Relay', url: 'https://www.myrelayportal.com/#login', icon: '📞'}
-  ]
-  },
-  {
-    title: 'My Stuff',
-    icon: '📂', 
-    blob: '#6e5494',
-    children: [
-        {title: 'Github', url: 'https://github.com/MarkE63Ward?tab=repositories'},
-        {title: 'License Issuance Checklist', url: 'https://marke63ward.github.io/License-Issuance-Checklist/'},
-        {title: 'Job Class & Pay Range Lookup', url: 'https://marke63ward.github.io/Philadelphia-Job-Class-Pay-Range-Lookup/'},
-        {title: 'DC 47 Contract Salary Increase Calculator', url: 'https://marke63ward.github.io/dc47-contract-increase-calculator/'},
-        {title: 'Employee Salary Lookup', url: 'https://marke63ward.github.io/employee-salary-lookup/'},
-        {title: 'DC 47 2186 Site', url: 'https://www.afscme2186.org/'},
-        {title: 'Leave Balance Tracker', url: 'https://marke63ward.github.io/Leave-Balance-Tracker/'},
-        {title: 'Posse Access Form', url: 'https://marke63ward.github.io/Posse_Access/'}  
-  ]
-  }
-  
+      { title: 'Smarter U', url: 'https://philadelphia.smarteru.com/remote-login/login.cfm', icon: '🎓' },
+      { title: 'Metabase Dashboard', url: 'http://li-metabase.city.phila.local/', icon: '📊' },
+      { title: 'Rise 360', url: 'https://id.articulate.com/#eyJhdXRob3JpemVRdWVyeSI6eyJjbGllbnRfaWQiOiIwb2FzbWJtbDd0ajhoQTg0QTM1NyIsInNjb3BlIjoib3BlbmlkIG9mZmxpbmVfYWNjZXNzIHByb2ZpbGUgZW1haWwgdXNlcl9zdWJzY3JpcHRpb24iLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vcmlzZS5hcnRpY3VsYXRlLmNvbS9tYW5hZ2UvYXBpL2F1dGgvYXV0aC1jYWxsYmFjayIsImNvZGVfY2hhbGxlbmdlIjoiYlZVN0htdlhHaS1KZV9QQ3J2VmRaX2ZDeXl0dW5WTmtxUWQ2UEpMeGpmRSIsImNvZGVfY2hhbGxlbmdlX21ldGhvZCI6IlMyNTYiLCJzdGF0ZSI6InRKNTIzZjdVb2JZbkppQTVzOUVmdEp6M09DZFc0am5TZ3pxZjdpV01uelkiLCJyZXNvdXJjZSI6Imh0dHBzOi8vcmlzZS5hcnRpY3VsYXRlLmNvbS9tYW5hZ2UifX0=', icon: '📝' },
+      { title: 'AppExtender', url: 'https://imaging/wx/', icon: '📐' },
+      { title: 'Wrike', url: 'https://login.wrike.com/login/', icon: '✅' },
+      { title: 'Tawk', url: 'https://dashboard.tawk.to/login#/dashboard/60e8b093d6e7610a49aa8609', icon: '💬' },
+      { title: 'QLess', url: 'https://merchant.us2.qless.com/login/', icon: '⏳' }
+  ]},
+  { title: 'Sharepoints', icon: '📂', blob: '#5a7bff', children: [
+      { title: 'CIU', url: 'https://phila.sharepoint.com/sites/li/ConstructionInspectionsUnit/Shared%20Documents/Forms/AllItems.aspx', icon: '🛠️' },
+      { title: 'CDU', url: 'https://phila.sharepoint.com/sites/li/CodeDevSP', icon: '🏛️' },
+      { title: 'CX', url: 'https://cxcanada.sharepoint.com/sites/Philly/Shared%20Documents/Forms/AllItems.aspx', icon: '💻' }
+  ]},
+  { title: 'City Sites', icon: '📂', blob: '#6e5494', children: [
+      { title: 'L&I', url: 'https://www.phila.gov/departments/department-of-licenses-and-inspections/', icon: '🗝️' },
+      { title: 'Atlas', url: 'https://atlas.phila.gov/', icon: '🗺️' },
+      { title: 'Service Directory', url: 'https://www.phila.gov/service-directory/', icon: '📒' },
+      { title: 'Publications & Forms', url: 'https://www.phila.gov/documents/', icon: '📋' },
+      { title: 'Permit App Tracker', url: 'https://www.phila.gov/li-permit-tracker/', icon: '🔍' },
+      { title: 'ARCS TRB', url: 'https://tax-review-board.phila.gov/auth/', icon: '💵' },
+      { title: 'Phila Dox', url: 'http://pdx-app01/recorder/web/login.jsp', icon: '📜' },
+      { title: 'Philly Code', url: 'https://codelibrary.amlegal.com/codes/philadelphia/latest/overview', icon: '📝' },
+      { title: 'Philly Legislation', url: 'https://phila.legistar.com/Legislation.aspx', icon: '⚖️' }
+  ]},
+  { title: 'Maps', icon: '📂', blob: '#5a7bff', children: [
+      { title: 'Building ID', url: 'https://bit.ly/eclipse-building-identifier-map', icon: '🏢' },
+      { title: 'Street Closures', url: 'https://phl.maps.arcgis.com/apps/webappviewer/index.html?id=e41853e3f1374df5aecc7f4dd09a55d4', icon: '🚧' },
+      { title: 'Inspector Assignment', url: 'https://phl.maps.arcgis.com/', icon: '🕵️‍♂️' },
+      { title: 'Open Maps', url: 'https://openmaps.phila.gov/', icon: '🏙️' },
+      { title: 'Waterway Map', url: 'https://phl.maps.arcgis.com/', icon: '🌊' },
+      { title: 'Atlas', url: 'https://atlas.phila.gov/', icon: '📍' },
+      { title: 'Google Maps', url: 'https://www.google.com/maps', icon: '🧭' }
+  ]},
+  { title: 'Forms', icon: '📂', blob: '#6e5494', children: [
+      { title: 'Internal Eclipse Issue', url: 'https://form.jotform.com/211546744291053', icon: '🐞' },
+      { title: 'Customer Feedback', url: 'https://form.jotform.com/202103727154041', icon: '🗣️' },
+      { title: 'Electrical Inspection Agency', url: 'https://form.jotform.com/PhillyLI/EIAissue', icon: '🔌' },
+      { title: 'Violation Catalog Update', url: 'https://form.jotform.com/213635633826055', icon: '⚠️' },
+      { title: 'Notice of Completed Repairs', url: 'https://form.jotform.com/200817695228057', icon: '🔧' },
+      { title: 'GIS Request', url: 'https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjI3NDczMDYsInRhc2tGb3JtSWQiOjExMDUxODh9CTQ4NDU4MDU5MDg4MDYJMDJhMDE5NjAzMGM0NWNkMTM1ODhhZDNkNzFhNzIwMDI4YjhjNjIzMWQzMjAzNTUyM2RmMGM1MmJjNTE0NDA5NA==', icon: '🗺️' },
+      { title: 'Eclipse Change Request', url: 'https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjI3NDczMDYsInRhc2tGb3JtSWQiOjE0MzY5NDV9CTQ4Njg3NzgyMjgwNjIJOTUzNjQ3ZWY5MGViMTRjZThjOGY5Y2UyZWQxMzc0NmFhNjk4NzM3MDNkMzQ2NzA4OTA3YTcwZWYzN2JiZGY4Yg==', icon: '🆕' },
+      { title: 'TTDU Request', url: 'https://form.jotform.com/231594382887168', icon: '📚' }
+  ]},
+  { title: 'Atlas Phones/IVR', icon: '📂', blob: '#6e5494', children: [
+      { title: 'Production', url: 'https://phila.myatlasinsight.com/LCI/Atlas.Insight/#login', icon: '📱' },
+      { title: 'Test', url: 'https://philatest.myatlasinsight.com/LCI/Atlas.Insight/#login', icon: '📴' },
+      { title: 'Relay', url: 'https://www.myrelayportal.com/#login', icon: '📞' }
+  ]},
+  { title: 'My Stuff', icon: '📂', blob: '#6e5494', children: [
+      { title: 'Github', url: 'https://github.com/MarkE63Ward?tab=repositories', icon: '🐙' },
+      { title: 'License Issuance Checklist', url: 'https://marke63ward.github.io/License-Issuance-Checklist/', icon: '✅' },
+      { title: 'Job Class & Pay Range Lookup', url: 'https://marke63ward.github.io/Philadelphia-Job-Class-Pay-Range-Lookup/', icon: '💼' },
+      { title: 'DC 47 Contract Salary Increase Calculator', url: 'https://marke63ward.github.io/dc47-contract-increase-calculator/', icon: '🧮' },
+      { title: 'Employee Salary Lookup', url: 'https://marke63ward.github.io/employee-salary-lookup/', icon: '🔍' },
+      { title: 'DC 47 2186 Site', url: 'https://www.afscme2186.org/', icon: '🤝' },
+      { title: 'Leave Balance Tracker', url: 'https://marke63ward.github.io/Leave-Balance-Tracker/', icon: '📅' },
+      { title: 'Posse Access Form', url: 'https://marke63ward.github.io/Posse_Access/', icon: '🔐' }
+  ]}
 ];
 
-
-
-
+// ── STATE ─────────────────────────────────────────────────────────────────────
 const grid = document.getElementById('cards');
 const backBtn = document.getElementById('backBtn');
+let navStack = []; // stack of [list, parentRef] pairs
+let currentList = bookmarks;
+let editMode = false;
+let editingBookmark = null; // { item, list, index }
+let editingFolder = null;
 
-let navStack = [];
-// Top date/time
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, type=''){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ el.className=''; }, 3500);
+}
+
+// ── DATE/TIME ─────────────────────────────────────────────────────────────────
 function updateTopTime(){
   const now = new Date();
-  const options = {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  };
   const el = document.getElementById('topTime');
-  if(el) el.textContent = now.toLocaleString(undefined, options);
+  if(el) el.textContent = now.toLocaleString(undefined, {
+    weekday:'long', month:'long', day:'numeric', year:'numeric',
+    hour:'numeric', minute:'2-digit', hour12:true
+  });
 }
 updateTopTime();
 setInterval(updateTopTime, 60000);
 
+// ── RENDER CARDS ──────────────────────────────────────────────────────────────
 function renderCards(list){
+  currentList = list;
   grid.innerHTML = '';
-  list.forEach(b => {
-    const card = document.createElement(b.url ? 'a' : 'div');
-    card.className = 'card';
+  list.forEach((b, idx) => {
+    const isFolder = !!b.children;
+    const card = document.createElement(b.url && !editMode ? 'a' : 'div');
+    card.className = 'card' + (editMode ? ' edit-mode' : '');
     card.tabIndex = 0;
-    if(b.url){
+    if(b.url && !editMode){
       card.href = b.url;
       card.target = '_blank';
       card.rel = 'noopener';
     }
+
+    const editActions = editMode ? `
+      <div class="card-edit-actions">
+        <button class="edit-icon-btn edit" data-idx="${idx}" title="Edit">✎</button>
+        <button class="edit-icon-btn del" data-idx="${idx}" title="Delete">🗑</button>
+      </div>` : '';
+
     card.innerHTML = `
-  ${b.icon ? `<span class="icon">${b.icon}</span>` : ''}
-  <div class="meta">
-    <span class="title">${b.title}</span>
-  </div>
-  <span class="blob" style="--blob:${b.blob || '#5a7bff'}"></span>
-`;
+      ${editActions}
+      ${b.icon ? `<span class="icon">${b.icon}</span>` : ''}
+      <div class="meta">
+        <span class="title">${b.title}</span>
+
+      </div>
+      <span class="blob" style="--blob:${b.blob || '#5a7bff'}"></span>
+    `;
 
     grid.appendChild(card);
 
-    if(b.children){
+    // Folder navigation (non-edit mode)
+    if(isFolder && !editMode){
       card.addEventListener('click', e=>{
         e.preventDefault();
-        navStack.push(list); // save current level
+        navStack.push(list);
         renderCards(b.children);
         backBtn.style.display = 'inline-block';
+      });
+    }
+
+    // Edit/delete buttons
+    if(editMode){
+      card.querySelector('.edit-icon-btn.edit')?.addEventListener('click', e=>{
+        e.stopPropagation();
+        if(isFolder) openFolderModal('edit', b, list, idx);
+        else openBookmarkModal('edit', b, list, idx);
+      });
+      card.querySelector('.edit-icon-btn.del')?.addEventListener('click', e=>{
+        e.stopPropagation();
+        if(confirm(`Delete "${b.title}"?`)){
+          list.splice(idx, 1);
+          renderCards(list);
+        }
       });
     }
   });
 }
 
-// Back button
+// ── BACK BUTTON ───────────────────────────────────────────────────────────────
 backBtn.addEventListener('click', ()=>{
   const prev = navStack.pop();
-  if(prev){
-    renderCards(prev);
-    if(navStack.length===0) backBtn.style.display='none';
-  }
+  if(prev){ renderCards(prev); if(navStack.length===0) backBtn.style.display='none'; }
 });
 
 renderCards(bookmarks);
 
-// Search shortcut
-const q = document.getElementById('q');
-window.addEventListener('keydown', (e)=>{ if(e.key==='/' && document.activeElement!==q){ e.preventDefault(); q.focus(); } });
-window.addEventListener('load', ()=> q.focus());
+// ── EDIT MODE ─────────────────────────────────────────────────────────────────
+const editToggleBtn = document.getElementById('editToggleBtn');
+const editToolbar = document.getElementById('editToolbar');
 
-//Theme Button
-const themeToggle = document.getElementById('themeToggle');
-
-const applyTheme = t => document.documentElement.setAttribute('data-theme', t);
-
-// default to dark if nothing saved
-const saved = localStorage.getItem('theme');
-applyTheme(saved || 'dark');
-
-themeToggle.addEventListener('click', () => {
-  const cur = document.documentElement.getAttribute('data-theme');
-  const next = cur === 'dark' ? 'light' : 'dark';
-  applyTheme(next);
-  localStorage.setItem('theme', next);
+editToggleBtn.addEventListener('click', ()=>{
+  editMode = true;
+  editToggleBtn.style.display = 'none';
+  editToolbar.classList.add('visible');
+  renderCards(currentList);
 });
 
-//Quickbase Button
-const quickbaseBtn = document.getElementById('quickbaseBtn');
-quickbaseBtn.addEventListener('click', () => {
-  window.open('https://phl-cao.quickbase.com/nav/app/bu9dn5ktp/action/appoverview?from=myqb', '_blank');
-});
-  //Meeting Notes Button
-  const meetingnotesBtn = document.getElementById('meetingnotesBtn');
-meetingnotesBtn.addEventListener('click', () => {
-  window.open('https://markevansjrcityphila-evansm1.github.io/CDU-Meeting-Notes/', '_blank');
-});
-//BRD Creator Button
-  const brdBtn = document.getElementById('brdBtn');
-brdBtn.addEventListener('click', () => {
-  window.open('https://marke63ward.github.io/BRD-Creator/', '_blank');
+document.getElementById('cancelEditBtn').addEventListener('click', ()=>{
+  editMode = false;
+  editToggleBtn.style.display = '';
+  editToolbar.classList.remove('visible');
+  renderCards(currentList);
 });
 
-// Calendar logic
-const calendarModal = document.getElementById("calendarModal");
-const calendarToggle = document.getElementById("calendarToggle");
-const closeCalendar = document.getElementById("closeCalendar");
-const calendarEl = document.getElementById("calendar");
-const calendarTitle = document.getElementById("calendarTitle");
-const prevMonthBtn = document.getElementById("prevMonth");
-const nextMonthBtn = document.getElementById("nextMonth");
-
-let currentDate = new Date();
-
-calendarToggle.addEventListener("click", () => {
-  buildCalendar(currentDate);
-  calendarModal.style.display = "flex";
+// ── ADD BOOKMARK ──────────────────────────────────────────────────────────────
+document.getElementById('addBookmarkBtn').addEventListener('click', ()=>{
+  openBookmarkModal('add', null, currentList, -1);
+});
+document.getElementById('addFolderBtn').addEventListener('click', ()=>{
+  openFolderModal('add', null, currentList, -1);
 });
 
-closeCalendar.addEventListener("click", (e) => {
-  e.stopPropagation();
-  calendarModal.style.display = "none";
+// ── BOOKMARK MODAL ────────────────────────────────────────────────────────────
+const bookmarkModal = document.getElementById('bookmarkModal');
+
+function openBookmarkModal(mode, item, list, idx){
+  editingBookmark = { item, list, idx, mode };
+  document.getElementById('bookmarkModalTitle').textContent = mode==='add' ? 'Add Bookmark' : 'Edit Bookmark';
+  document.getElementById('bmTitle').value = item?.title || '';
+  document.getElementById('bmUrl').value = item?.url || '';
+  document.getElementById('bmIcon').value = item?.icon || '';
+  bookmarkModal.classList.add('open');
+  document.getElementById('bmTitle').focus();
+}
+
+document.getElementById('bmCancelBtn').addEventListener('click', ()=> bookmarkModal.classList.remove('open'));
+bookmarkModal.addEventListener('click', e=>{ if(e.target===bookmarkModal) bookmarkModal.classList.remove('open'); });
+
+document.getElementById('bmSaveBtn').addEventListener('click', ()=>{
+  const title = document.getElementById('bmTitle').value.trim();
+  const url = document.getElementById('bmUrl').value.trim();
+  const icon = document.getElementById('bmIcon').value.trim();
+  if(!title){ alert('Title is required.'); return; }
+  const { list, idx, mode } = editingBookmark;
+  const obj = { title, url: url||undefined, icon: icon||undefined };
+  if(mode==='add') list.push(obj);
+  else list[idx] = { ...list[idx], ...obj };
+  bookmarkModal.classList.remove('open');
+  renderCards(currentList);
 });
 
-calendarModal.addEventListener("click", (e) => {
-  if (e.target === calendarModal) {
-    calendarModal.style.display = "none";
+// ── FOLDER MODAL ──────────────────────────────────────────────────────────────
+const folderModal = document.getElementById('folderModal');
+
+function openFolderModal(mode, item, list, idx){
+  editingFolder = { item, list, idx, mode };
+  document.getElementById('folderModalTitle').textContent = mode==='add' ? 'Add Folder' : 'Edit Folder';
+  document.getElementById('folderTitle').value = item?.title || '';
+  document.getElementById('folderIcon').value = item?.icon || '📂';
+  folderModal.classList.add('open');
+  document.getElementById('folderTitle').focus();
+}
+
+document.getElementById('folderCancelBtn').addEventListener('click', ()=> folderModal.classList.remove('open'));
+folderModal.addEventListener('click', e=>{ if(e.target===folderModal) folderModal.classList.remove('open'); });
+
+document.getElementById('folderSaveBtn').addEventListener('click', ()=>{
+  const title = document.getElementById('folderTitle').value.trim();
+  const icon = document.getElementById('folderIcon').value.trim();
+  if(!title){ alert('Folder name is required.'); return; }
+  const { list, idx, mode } = editingFolder;
+  if(mode==='add'){
+    list.push({ title, icon: icon||'📂', children: [] });
+  } else {
+    list[idx] = { ...list[idx], title, icon: icon||'📂' };
   }
+  folderModal.classList.remove('open');
+  renderCards(currentList);
 });
 
-prevMonthBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  currentDate.setMonth(currentDate.getMonth() - 1);
-  buildCalendar(currentDate);
+// ── GITHUB SAVE ───────────────────────────────────────────────────────────────
+document.getElementById('saveGithubBtn').addEventListener('click', async ()=>{
+  const token = localStorage.getItem('gh_token');
+  if(!token){ openTokenModal(true); return; }
+  await pushToGitHub(token);
 });
 
-nextMonthBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  currentDate.setMonth(currentDate.getMonth() + 1);
-  buildCalendar(currentDate);
-});
-
-function buildCalendar(date) {
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const today = new Date();
-
-  calendarEl.innerHTML = "";
-  calendarTitle.textContent = date.toLocaleString("default", { month: "long", year: "numeric" });
-
-  // Weekday headers
-  ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d => {
-    const div = document.createElement("div");
-    div.textContent = d;
-    div.className = "header";
-    calendarEl.appendChild(div);
-  });
-
-  // Empty slots
-  for (let i=0; i<firstDay; i++) {
-    calendarEl.appendChild(document.createElement("div"));
-  }
-
-  // Days
-  for (let d=1; d<=daysInMonth; d++) {
-    const div = document.createElement("div");
-    div.textContent = d;
-    if (
-      d===today.getDate() &&
-      month===today.getMonth() &&
-      year===today.getFullYear()
-    ) {
-      div.className = "today";
+async function pushToGitHub(token){
+  const statusEl = document.getElementById('editStatus');
+  statusEl.textContent = '⏳ Saving to GitHub…';
+  try {
+    // 1. Get current file SHA
+    const metaRes = await fetch(
+      `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_FILE}?ref=${GITHUB_BRANCH}`,
+      { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } }
+    );
+    if(!metaRes.ok){
+      const err = await metaRes.json();
+      throw new Error(err.message || 'Could not fetch file from GitHub');
     }
-    calendarEl.appendChild(div);
+    const meta = await metaRes.json();
+    const sha = meta.sha;
+
+    // 2. Build updated file content
+    const newContent = buildUpdatedHTML();
+    const encoded = btoa(unescape(encodeURIComponent(newContent)));
+
+    // 3. Push
+    const pushRes = await fetch(
+      `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
+      {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Update bookmarks — ${new Date().toLocaleString()}`,
+          content: encoded,
+          sha,
+          branch: GITHUB_BRANCH
+        })
+      }
+    );
+    if(!pushRes.ok){
+      const err = await pushRes.json();
+      throw new Error(err.message || 'Push failed');
+    }
+    toast('✅ Saved to GitHub! Changes will appear after a moment.', 'ok');
+    statusEl.textContent = 'Saved! ✓';
+  } catch(e){
+    console.error(e);
+    toast('❌ Error: ' + e.message, 'error');
+    statusEl.textContent = 'Save failed — check token or branch name';
+    if(e.message.includes('401') || e.message.includes('credential') || e.message.toLowerCase().includes('bad credential')){
+      localStorage.removeItem('gh_token');
+      openTokenModal(true);
+    }
   }
 }
 
+function buildUpdatedHTML(){
+  // Replace the bookmarks array in the source with the current one
+  const src = document.documentElement.outerHTML;
+  const start = src.indexOf('let bookmarks = [');
+  const end = src.indexOf('\n];', start) + 3;
+  if(start === -1 || end < 3) throw new Error('Could not locate bookmarks in HTML source');
+  const newArr = 'let bookmarks = ' + JSON.stringify(bookmarks, null, 2) + ';';
+  return src.slice(0, start) + newArr + src.slice(end);
+}
+
+// ── TOKEN MODAL ───────────────────────────────────────────────────────────────
+const tokenModal = document.getElementById('tokenModal');
+
+function openTokenModal(afterSave){
+  tokenModal.classList.add('open');
+  tokenModal._afterSave = afterSave;
+  document.getElementById('tokenInput').value = localStorage.getItem('gh_token') || '';
+}
+
+document.getElementById('tokenCancelBtn').addEventListener('click', ()=> tokenModal.classList.remove('open'));
+tokenModal.addEventListener('click', e=>{ if(e.target===tokenModal) tokenModal.classList.remove('open'); });
+
+document.getElementById('tokenSaveBtn').addEventListener('click', async ()=>{
+  const t = document.getElementById('tokenInput').value.trim();
+  if(!t){ alert('Please paste your token.'); return; }
+  localStorage.setItem('gh_token', t);
+  tokenModal.classList.remove('open');
+  toast('🔑 Token saved!', 'ok');
+  if(tokenModal._afterSave) await pushToGitHub(t);
+});
+
+// ── SEARCH SHORTCUT ───────────────────────────────────────────────────────────
+const q = document.getElementById('q');
+window.addEventListener('keydown', e=>{ if(e.key==='/' && document.activeElement!==q){ e.preventDefault(); q.focus(); } });
+window.addEventListener('load', ()=> q.focus());
+
+// ── THEME ─────────────────────────────────────────────────────────────────────
+const applyTheme = t => document.documentElement.setAttribute('data-theme', t);
+applyTheme(localStorage.getItem('theme') || 'dark');
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  const next = document.documentElement.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
+  applyTheme(next); localStorage.setItem('theme', next);
+});
+
+// ── QUICK BUTTONS ─────────────────────────────────────────────────────────────
+document.getElementById('quickbaseBtn').addEventListener('click', ()=> window.open('https://phl-cao.quickbase.com/nav/app/bu9dn5ktp/action/appoverview?from=myqb','_blank'));
+document.getElementById('meetingnotesBtn').addEventListener('click', ()=> window.open('https://markevansjrcityphila-evansm1.github.io/CDU-Meeting-Notes/','_blank'));
+document.getElementById('brdBtn').addEventListener('click', ()=> window.open('https://marke63ward.github.io/BRD-Creator/','_blank'));
+
+// ── CALENDAR ──────────────────────────────────────────────────────────────────
+const calendarModal = document.getElementById('calendarModal');
+let currentDate = new Date();
+
+document.getElementById('calendarToggle').addEventListener('click', ()=>{ buildCalendar(currentDate); calendarModal.style.display='flex'; });
+document.getElementById('closeCalendar').addEventListener('click', e=>{ e.stopPropagation(); calendarModal.style.display='none'; });
+calendarModal.addEventListener('click', e=>{ if(e.target===calendarModal) calendarModal.style.display='none'; });
+document.getElementById('prevMonth').addEventListener('click', e=>{ e.stopPropagation(); currentDate.setMonth(currentDate.getMonth()-1); buildCalendar(currentDate); });
+document.getElementById('nextMonth').addEventListener('click', e=>{ e.stopPropagation(); currentDate.setMonth(currentDate.getMonth()+1); buildCalendar(currentDate); });
+
+function buildCalendar(date){
+  const year=date.getFullYear(), month=date.getMonth();
+  const firstDay=new Date(year,month,1).getDay(), daysInMonth=new Date(year,month+1,0).getDate();
+  const today=new Date();
+  const calEl=document.getElementById('calendar');
+  calEl.innerHTML='';
+  document.getElementById('calendarTitle').textContent=date.toLocaleString('default',{month:'long',year:'numeric'});
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d=>{ const div=document.createElement('div'); div.textContent=d; div.className='header'; calEl.appendChild(div); });
+  for(let i=0;i<firstDay;i++) calEl.appendChild(document.createElement('div'));
+  for(let d=1;d<=daysInMonth;d++){
+    const div=document.createElement('div'); div.textContent=d;
+    if(d===today.getDate()&&month===today.getMonth()&&year===today.getFullYear()) div.className='today';
+    calEl.appendChild(div);
+  }
+}
 </script>
 </body>
 </html>
