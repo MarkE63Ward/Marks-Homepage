@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<html lang="en" data-theme="dark"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Marks Homepage</title>
-<meta name="description" content="A simple personal start page with Google search and bookmark cards." />
+<meta name="description" content="A simple personal start page with Google search and bookmark cards.">
 <style>
 :root{
   --bg: #0b1020;
@@ -229,9 +227,9 @@ form.search { display:flex; gap:10px; align-items:center; }
 footer{ margin-top: 28px; color: var(--muted); font-size: 13px; text-align:center; }
 </style>
 </head>
-<body>
+<body class="clickup-chrome-ext_installed">
 <div class="wrap">
-  <div id="topTime" class="top-time">Loading date…</div>
+  <div id="topTime" class="top-time">Monday, March 30, 2026 at 10:08 AM</div>
 
   <header>
     <div class="brand" title="Mark's Personal Homepage">
@@ -244,30 +242,78 @@ footer{ margin-top: 28px; color: var(--muted); font-size: 13px; text-align:cente
       <button id="brdBtn" class="btn" title="BRD Creator">📄 BRD Creator</button>
       <button id="calendarToggle" class="btn" title="Show calendar">📅 Calendar</button>
       <button id="themeToggle" class="btn" title="Toggle light/dark">🌓 Theme</button>
-      <button id="editToggleBtn" class="btn" title="Edit bookmarks">✏️ Edit</button>
+      <button id="editToggleBtn" class="btn" title="Edit bookmarks" style="display: none;">✏️ Edit</button>
     </div>
   </header>
 
   <section class="search-card">
     <form class="search" action="https://www.google.com/search" method="GET" role="search" aria-label="Google search">
-      <input id="q" type="text" name="q" placeholder="Search Google…" autocomplete="off" spellcheck="false" aria-label="Search" />
+      <input id="q" type="text" name="q" placeholder="Search Google…" autocomplete="off" spellcheck="false" aria-label="Search">
       <button type="submit" aria-label="Search">Search</button>
-      <input type="hidden" name="hl" value="en" />
+      <input type="hidden" name="hl" value="en">
     </form>
     <div class="muted" style="margin-top:10px; font-size:15px">Tips — Use <code>site:</code> to search within a website | Use quotes for exact matches | Use <code>filetype:</code> to find documents.</div>
   </section>
 
   <!-- Edit toolbar -->
-  <div id="editToolbar">
+  <div id="editToolbar" class="visible">
     <button class="btn primary" id="addBookmarkBtn">＋ Add Bookmark</button>
     <button class="btn primary" id="addFolderBtn">📁 Add Folder</button>
     <button class="btn success" id="saveGithubBtn">☁️ Save to GitHub</button>
     <button class="btn danger" id="cancelEditBtn">✖ Cancel</button>
-    <span class="edit-status" id="editStatus">Edit mode — click ✎ to rename, 🗑 to delete</span>
+    <span class="edit-status" id="editStatus">⏳ Saving to GitHub…</span>
   </div>
 
-  <button id="backBtn" class="back-btn">← Back</button>
-  <div class="grid" id="cards" aria-label="Bookmarks"></div>
+  <button id="backBtn" class="back-btn" style="display: inline-block;">← Back</button>
+  <div class="grid" id="cards" aria-label="Bookmarks"><div class="card edit-mode" tabindex="0">
+      
+      <div class="card-edit-actions">
+        <button class="edit-icon-btn edit" data-idx="0" title="Edit">✎</button>
+        <button class="edit-icon-btn del" data-idx="0" title="Delete">🗑</button>
+      </div>
+      <span class="icon">🖥️</span>
+      <div class="meta">
+        <span class="title">Internal Training</span>
+
+      </div>
+      <span class="blob" style="--blob:#5a7bff"></span>
+    </div><div class="card edit-mode" tabindex="0">
+      
+      <div class="card-edit-actions">
+        <button class="edit-icon-btn edit" data-idx="1" title="Edit">✎</button>
+        <button class="edit-icon-btn del" data-idx="1" title="Delete">🗑</button>
+      </div>
+      <span class="icon">👥</span>
+      <div class="meta">
+        <span class="title">Public Training</span>
+
+      </div>
+      <span class="blob" style="--blob:#34c759"></span>
+    </div><div class="card edit-mode" tabindex="0">
+      
+      <div class="card-edit-actions">
+        <button class="edit-icon-btn edit" data-idx="2" title="Edit">✎</button>
+        <button class="edit-icon-btn del" data-idx="2" title="Delete">🗑</button>
+      </div>
+      <span class="icon">⚙️</span>
+      <div class="meta">
+        <span class="title">Config Training</span>
+
+      </div>
+      <span class="blob" style="--blob:#ff3b30"></span>
+    </div><div class="card edit-mode" tabindex="0">
+      
+      <div class="card-edit-actions">
+        <button class="edit-icon-btn edit" data-idx="3" title="Edit">✎</button>
+        <button class="edit-icon-btn del" data-idx="3" title="Delete">🗑</button>
+      </div>
+      <span class="icon">🌐</span>
+      <div class="meta">
+        <span class="title">WebUi Public</span>
+
+      </div>
+      <span class="blob" style="--blob:#5a7bff"></span>
+    </div></div>
 
   <footer>
     <div>✏️ Click <strong>Edit</strong> to manage bookmarks. Changes sync to GitHub automatically.</div>
@@ -295,7 +341,7 @@ footer{ margin-top: 28px; color: var(--muted); font-size: 13px; text-align:cente
     <p><strong>How to get one:</strong> GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → check <code>repo</code> scope → copy it.</p>
     <p><a href="https://github.com/settings/tokens" target="_blank" rel="noopener">→ Open GitHub Token Settings</a></p>
     <label>Personal Access Token</label>
-    <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+    <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
     <div class="modal-actions">
       <button class="btn" id="tokenCancelBtn">Cancel</button>
       <button class="btn primary" id="tokenSaveBtn">Save Token</button>
@@ -308,11 +354,11 @@ footer{ margin-top: 28px; color: var(--muted); font-size: 13px; text-align:cente
   <div class="modal-box">
     <h3 id="bookmarkModalTitle">Add Bookmark</h3>
     <label>Title</label>
-    <input type="text" id="bmTitle" placeholder="e.g. Google" />
+    <input type="text" id="bmTitle" placeholder="e.g. Google">
     <label>URL</label>
-    <input type="text" id="bmUrl" placeholder="https://..." />
+    <input type="text" id="bmUrl" placeholder="https://...">
     <label>Icon (emoji)</label>
-    <input type="text" id="bmIcon" placeholder="🌐" maxlength="4" />
+    <input type="text" id="bmIcon" placeholder="🌐" maxlength="4">
     <div class="modal-actions">
       <button class="btn" id="bmCancelBtn">Cancel</button>
       <button class="btn primary" id="bmSaveBtn">Save</button>
@@ -325,9 +371,9 @@ footer{ margin-top: 28px; color: var(--muted); font-size: 13px; text-align:cente
   <div class="modal-box">
     <h3 id="folderModalTitle">Add Folder</h3>
     <label>Folder Name</label>
-    <input type="text" id="folderTitle" placeholder="e.g. Work Tools" />
+    <input type="text" id="folderTitle" placeholder="e.g. Work Tools">
     <label>Icon (emoji)</label>
-    <input type="text" id="folderIcon" placeholder="📂" maxlength="4" />
+    <input type="text" id="folderIcon" placeholder="📂" maxlength="4">
     <div class="modal-actions">
       <button class="btn" id="folderCancelBtn">Cancel</button>
       <button class="btn primary" id="folderSaveBtn">Save</button>
@@ -348,88 +394,381 @@ const GITHUB_BRANCH = 'main'; // change to 'master' if needed
 // ── BOOKMARKS DATA ────────────────────────────────────────────────────────────
 let bookmarks = [
   {
-    title: 'Posse', icon: '📂', blob: '#ff9500',
-    children: [
-      { title: 'Posse Test', icon: '🧪', blob: '#ffcc00', children: [
-          { title: 'Internal Test', url: 'https://eclipsetest-int.phila.gov/phluatest/int/lms/#menuPaneUseKey=1013343_2', icon: '🖥️', blob: '#5a7bff' },
-          { title: 'Public Test', url: 'https://eclipsetest-ext.phila.gov/phluatest/pub/lms/Login.aspx', icon: '👥', blob: '#34c759' },
-          { title: 'Config Test', url: 'https://eclipsetest-int.phila.gov/phluatest/int/config/Login.aspx', icon: '⚙️', blob: '#ff3b30' }
-      ]},
-      { title: 'Posse Training', icon: '🎓', blob: '#00bcd4', children: [
-          { title: 'Internal Training', url: 'https://eclipsetest-int.phila.gov/phltraining/int/lms/#menuPaneUseKey=1013343_2', icon: '🖥️', blob: '#5a7bff' },
-          { title: 'Public Training', url: 'https://eclipsetest-ext.phila.gov/phltraining/pub/lms/Login.aspx', icon: '👥', blob: '#34c759' },
-          { title: 'Config Training', url: 'https://eclipsetest-int.phila.gov/phltraining/int/config/Login.aspx', icon: '⚙️', blob: '#ff3b30' },
-          { title: 'WebUi Public', url: 'https://eclipsetest-ext.phila.gov/phltraining/pub/webui/#', icon: '🌐' }
-      ]},
-      { title: 'Posse Production', icon: '🚀', blob: '#ff4081', children: [
-          { title: 'Internal Production', url: 'https://eclipseprod.phila.gov/phillylmsprod/int/lms/Default.aspx#menuPaneUseKey=1013343_2', icon: '🖥️', blob: '#5a7bff' },
-          { title: 'Public Production', url: 'https://eclipse.phila.gov/phillylmsprod/pub/lms/Login.aspx', icon: '👥', blob: '#34c759' },
-          { title: 'Config Production', url: 'https://eclipseprod.phila.gov/phillylmsprod/int/config/Login.aspx', icon: '⚙️', blob: '#ff3b30' }
-      ]}
+    "title": "Posse",
+    "icon": "📂",
+    "blob": "#ff9500",
+    "children": [
+      {
+        "title": "Posse Test",
+        "icon": "🧪",
+        "blob": "#ffcc00",
+        "children": [
+          {
+            "title": "Internal Test",
+            "url": "https://eclipsetest-int.phila.gov/phluatest/int/lms/#menuPaneUseKey=1013343_2",
+            "icon": "🖥️",
+            "blob": "#5a7bff"
+          },
+          {
+            "title": "Public Test",
+            "url": "https://eclipsetest-ext.phila.gov/phluatest/pub/lms/Login.aspx",
+            "icon": "👥",
+            "blob": "#34c759"
+          },
+          {
+            "title": "Config Test",
+            "url": "https://eclipsetest-int.phila.gov/phluatest/int/config/Login.aspx",
+            "icon": "⚙️",
+            "blob": "#ff3b30"
+          }
+        ]
+      },
+      {
+        "title": "Posse Training",
+        "icon": "🎓",
+        "blob": "#00bcd4",
+        "children": [
+          {
+            "title": "Internal Training",
+            "url": "https://eclipsetest-int.phila.gov/phltraining/int/lms/#menuPaneUseKey=1013343_2",
+            "icon": "🖥️",
+            "blob": "#5a7bff"
+          },
+          {
+            "title": "Public Training",
+            "url": "https://eclipsetest-ext.phila.gov/phltraining/pub/lms/Login.aspx",
+            "icon": "👥",
+            "blob": "#34c759"
+          },
+          {
+            "title": "Config Training",
+            "url": "https://eclipsetest-int.phila.gov/phltraining/int/config/Login.aspx",
+            "icon": "⚙️",
+            "blob": "#ff3b30"
+          },
+          {
+            "title": "WebUi Public",
+            "url": "https://eclipsetest-ext.phila.gov/phltraining/pub/webui/#",
+            "icon": "🌐"
+          }
+        ]
+      },
+      {
+        "title": "Posse Production",
+        "icon": "🚀",
+        "blob": "#ff4081",
+        "children": [
+          {
+            "title": "Internal Production",
+            "url": "https://eclipseprod.phila.gov/phillylmsprod/int/lms/Default.aspx#menuPaneUseKey=1013343_2",
+            "icon": "🖥️",
+            "blob": "#5a7bff"
+          },
+          {
+            "title": "Public Production",
+            "url": "https://eclipse.phila.gov/phillylmsprod/pub/lms/Login.aspx",
+            "icon": "👥",
+            "blob": "#34c759"
+          },
+          {
+            "title": "Config Production",
+            "url": "https://eclipseprod.phila.gov/phillylmsprod/int/config/Login.aspx",
+            "icon": "⚙️",
+            "blob": "#ff3b30"
+          }
+        ]
+      }
     ]
   },
-  { title: 'Resources', icon: '📂', blob: '#5a7bff', children: [
-      { title: 'Kronos', url: 'https://philalni.kronos.net/wfcstatic/applications/navigator/html5/dist/container/index.html?version=8.1.9.392#/', icon: '🕒' },
-      { title: 'One Philly', url: 'https://ess-onephilly.phila.gov/OA_HTML/AppsLocalLogin.jsp', icon: '💰' },
-      { title: 'Jira', url: 'https://computronix.atlassian.net/servicedesk/customer/portals', icon: '🐞' },
-      { title: 'Smarter U', url: 'https://philadelphia.smarteru.com/remote-login/login.cfm', icon: '🎓' },
-      { title: 'Metabase Dashboard', url: 'http://li-metabase.city.phila.local/', icon: '📊' },
-      { title: 'Rise 360', url: 'https://id.articulate.com/#eyJhdXRob3JpemVRdWVyeSI6eyJjbGllbnRfaWQiOiIwb2FzbWJtbDd0ajhoQTg0QTM1NyIsInNjb3BlIjoib3BlbmlkIG9mZmxpbmVfYWNjZXNzIHByb2ZpbGUgZW1haWwgdXNlcl9zdWJzY3JpcHRpb24iLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vcmlzZS5hcnRpY3VsYXRlLmNvbS9tYW5hZ2UvYXBpL2F1dGgvYXV0aC1jYWxsYmFjayIsImNvZGVfY2hhbGxlbmdlIjoiYlZVN0htdlhHaS1KZV9QQ3J2VmRaX2ZDeXl0dW5WTmtxUWQ2UEpMeGpmRSIsImNvZGVfY2hhbGxlbmdlX21ldGhvZCI6IlMyNTYiLCJzdGF0ZSI6InRKNTIzZjdVb2JZbkppQTVzOUVmdEp6M09DZFc0am5TZ3pxZjdpV01uelkiLCJyZXNvdXJjZSI6Imh0dHBzOi8vcmlzZS5hcnRpY3VsYXRlLmNvbS9tYW5hZ2UifX0=', icon: '📝' },
-      { title: 'AppExtender', url: 'https://imaging/wx/', icon: '📐' },
-      { title: 'Wrike', url: 'https://login.wrike.com/login/', icon: '✅' },
-      { title: 'Tawk', url: 'https://dashboard.tawk.to/login#/dashboard/60e8b093d6e7610a49aa8609', icon: '💬' },
-      { title: 'QLess', url: 'https://merchant.us2.qless.com/login/', icon: '⏳' }
-  ]},
-  { title: 'Sharepoints', icon: '📂', blob: '#5a7bff', children: [
-      { title: 'CIU', url: 'https://phila.sharepoint.com/sites/li/ConstructionInspectionsUnit/Shared%20Documents/Forms/AllItems.aspx', icon: '🛠️' },
-      { title: 'CDU', url: 'https://phila.sharepoint.com/sites/li/CodeDevSP', icon: '🏛️' },
-      { title: 'CX', url: 'https://cxcanada.sharepoint.com/sites/Philly/Shared%20Documents/Forms/AllItems.aspx', icon: '💻' }
-  ]},
-  { title: 'City Sites', icon: '📂', blob: '#6e5494', children: [
-      { title: 'L&I', url: 'https://www.phila.gov/departments/department-of-licenses-and-inspections/', icon: '🗝️' },
-      { title: 'Atlas', url: 'https://atlas.phila.gov/', icon: '🗺️' },
-      { title: 'Service Directory', url: 'https://www.phila.gov/service-directory/', icon: '📒' },
-      { title: 'Publications & Forms', url: 'https://www.phila.gov/documents/', icon: '📋' },
-      { title: 'Permit App Tracker', url: 'https://www.phila.gov/li-permit-tracker/', icon: '🔍' },
-      { title: 'ARCS TRB', url: 'https://tax-review-board.phila.gov/auth/', icon: '💵' },
-      { title: 'Phila Dox', url: 'http://pdx-app01/recorder/web/login.jsp', icon: '📜' },
-      { title: 'Philly Code', url: 'https://codelibrary.amlegal.com/codes/philadelphia/latest/overview', icon: '📝' },
-      { title: 'Philly Legislation', url: 'https://phila.legistar.com/Legislation.aspx', icon: '⚖️' }
-  ]},
-  { title: 'Maps', icon: '📂', blob: '#5a7bff', children: [
-      { title: 'Building ID', url: 'https://bit.ly/eclipse-building-identifier-map', icon: '🏢' },
-      { title: 'Street Closures', url: 'https://phl.maps.arcgis.com/apps/webappviewer/index.html?id=e41853e3f1374df5aecc7f4dd09a55d4', icon: '🚧' },
-      { title: 'Inspector Assignment', url: 'https://phl.maps.arcgis.com/', icon: '🕵️‍♂️' },
-      { title: 'Open Maps', url: 'https://openmaps.phila.gov/', icon: '🏙️' },
-      { title: 'Waterway Map', url: 'https://phl.maps.arcgis.com/', icon: '🌊' },
-      { title: 'Atlas', url: 'https://atlas.phila.gov/', icon: '📍' },
-      { title: 'Google Maps', url: 'https://www.google.com/maps', icon: '🧭' }
-  ]},
-  { title: 'Forms', icon: '📂', blob: '#6e5494', children: [
-      { title: 'Internal Eclipse Issue', url: 'https://form.jotform.com/211546744291053', icon: '🐞' },
-      { title: 'Customer Feedback', url: 'https://form.jotform.com/202103727154041', icon: '🗣️' },
-      { title: 'Electrical Inspection Agency', url: 'https://form.jotform.com/PhillyLI/EIAissue', icon: '🔌' },
-      { title: 'Violation Catalog Update', url: 'https://form.jotform.com/213635633826055', icon: '⚠️' },
-      { title: 'Notice of Completed Repairs', url: 'https://form.jotform.com/200817695228057', icon: '🔧' },
-      { title: 'GIS Request', url: 'https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjI3NDczMDYsInRhc2tGb3JtSWQiOjExMDUxODh9CTQ4NDU4MDU5MDg4MDYJMDJhMDE5NjAzMGM0NWNkMTM1ODhhZDNkNzFhNzIwMDI4YjhjNjIzMWQzMjAzNTUyM2RmMGM1MmJjNTE0NDA5NA==', icon: '🗺️' },
-      { title: 'Eclipse Change Request', url: 'https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjI3NDczMDYsInRhc2tGb3JtSWQiOjE0MzY5NDV9CTQ4Njg3NzgyMjgwNjIJOTUzNjQ3ZWY5MGViMTRjZThjOGY5Y2UyZWQxMzc0NmFhNjk4NzM3MDNkMzQ2NzA4OTA3YTcwZWYzN2JiZGY4Yg==', icon: '🆕' },
-      { title: 'TTDU Request', url: 'https://form.jotform.com/231594382887168', icon: '📚' }
-  ]},
-  { title: 'Atlas Phones/IVR', icon: '📂', blob: '#6e5494', children: [
-      { title: 'Production', url: 'https://phila.myatlasinsight.com/LCI/Atlas.Insight/#login', icon: '📱' },
-      { title: 'Test', url: 'https://philatest.myatlasinsight.com/LCI/Atlas.Insight/#login', icon: '📴' },
-      { title: 'Relay', url: 'https://www.myrelayportal.com/#login', icon: '📞' }
-  ]},
-  { title: 'My Stuff', icon: '📂', blob: '#6e5494', children: [
-      { title: 'Github', url: 'https://github.com/MarkE63Ward?tab=repositories', icon: '🐙' },
-      { title: 'License Issuance Checklist', url: 'https://marke63ward.github.io/License-Issuance-Checklist/', icon: '✅' },
-      { title: 'Job Class & Pay Range Lookup', url: 'https://marke63ward.github.io/Philadelphia-Job-Class-Pay-Range-Lookup/', icon: '💼' },
-      { title: 'DC 47 Contract Salary Increase Calculator', url: 'https://marke63ward.github.io/dc47-contract-increase-calculator/', icon: '🧮' },
-      { title: 'Employee Salary Lookup', url: 'https://marke63ward.github.io/employee-salary-lookup/', icon: '🔍' },
-      { title: 'DC 47 2186 Site', url: 'https://www.afscme2186.org/', icon: '🤝' },
-      { title: 'Leave Balance Tracker', url: 'https://marke63ward.github.io/Leave-Balance-Tracker/', icon: '📅' },
-      { title: 'Posse Access Form', url: 'https://marke63ward.github.io/Posse_Access/', icon: '🔐' }
-  ]}
+  {
+    "title": "Resources",
+    "icon": "📂",
+    "blob": "#5a7bff",
+    "children": [
+      {
+        "title": "Kronos",
+        "url": "https://philalni.kronos.net/wfcstatic/applications/navigator/html5/dist/container/index.html?version=8.1.9.392#/",
+        "icon": "🕒"
+      },
+      {
+        "title": "One Philly",
+        "url": "https://ess-onephilly.phila.gov/OA_HTML/AppsLocalLogin.jsp",
+        "icon": "💰"
+      },
+      {
+        "title": "Jira",
+        "url": "https://computronix.atlassian.net/servicedesk/customer/portals",
+        "icon": "🐞"
+      },
+      {
+        "title": "Smarter U",
+        "url": "https://philadelphia.smarteru.com/remote-login/login.cfm",
+        "icon": "🎓"
+      },
+      {
+        "title": "Metabase Dashboard",
+        "url": "http://li-metabase.city.phila.local/",
+        "icon": "📊"
+      },
+      {
+        "title": "Rise 360",
+        "url": "https://id.articulate.com/#eyJhdXRob3JpemVRdWVyeSI6eyJjbGllbnRfaWQiOiIwb2FzbWJtbDd0ajhoQTg0QTM1NyIsInNjb3BlIjoib3BlbmlkIG9mZmxpbmVfYWNjZXNzIHByb2ZpbGUgZW1haWwgdXNlcl9zdWJzY3JpcHRpb24iLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vcmlzZS5hcnRpY3VsYXRlLmNvbS9tYW5hZ2UvYXBpL2F1dGgvYXV0aC1jYWxsYmFjayIsImNvZGVfY2hhbGxlbmdlIjoiYlZVN0htdlhHaS1KZV9QQ3J2VmRaX2ZDeXl0dW5WTmtxUWQ2UEpMeGpmRSIsImNvZGVfY2hhbGxlbmdlX21ldGhvZCI6IlMyNTYiLCJzdGF0ZSI6InRKNTIzZjdVb2JZbkppQTVzOUVmdEp6M09DZFc0am5TZ3pxZjdpV01uelkiLCJyZXNvdXJjZSI6Imh0dHBzOi8vcmlzZS5hcnRpY3VsYXRlLmNvbS9tYW5hZ2UifX0=",
+        "icon": "📝"
+      },
+      {
+        "title": "AppExtender",
+        "url": "https://imaging/wx/",
+        "icon": "📐"
+      },
+      {
+        "title": "Wrike",
+        "url": "https://login.wrike.com/login/",
+        "icon": "✅"
+      },
+      {
+        "title": "Tawk",
+        "url": "https://dashboard.tawk.to/login#/dashboard/60e8b093d6e7610a49aa8609",
+        "icon": "💬"
+      },
+      {
+        "title": "QLess",
+        "url": "https://merchant.us2.qless.com/login/",
+        "icon": "⏳"
+      }
+    ]
+  },
+  {
+    "title": "Sharepoints",
+    "icon": "📂",
+    "blob": "#5a7bff",
+    "children": [
+      {
+        "title": "CIU",
+        "url": "https://phila.sharepoint.com/sites/li/ConstructionInspectionsUnit/Shared%20Documents/Forms/AllItems.aspx",
+        "icon": "🛠️"
+      },
+      {
+        "title": "CDU",
+        "url": "https://phila.sharepoint.com/sites/li/CodeDevSP",
+        "icon": "🏛️"
+      },
+      {
+        "title": "CX",
+        "url": "https://cxcanada.sharepoint.com/sites/Philly/Shared%20Documents/Forms/AllItems.aspx",
+        "icon": "💻"
+      }
+    ]
+  },
+  {
+    "title": "City Sites",
+    "icon": "📂",
+    "blob": "#6e5494",
+    "children": [
+      {
+        "title": "L&I",
+        "url": "https://www.phila.gov/departments/department-of-licenses-and-inspections/",
+        "icon": "🗝️"
+      },
+      {
+        "title": "Atlas",
+        "url": "https://atlas.phila.gov/",
+        "icon": "🗺️"
+      },
+      {
+        "title": "Service Directory",
+        "url": "https://www.phila.gov/service-directory/",
+        "icon": "📒"
+      },
+      {
+        "title": "Publications & Forms",
+        "url": "https://www.phila.gov/documents/",
+        "icon": "📋"
+      },
+      {
+        "title": "Permit App Tracker",
+        "url": "https://www.phila.gov/li-permit-tracker/",
+        "icon": "🔍"
+      },
+      {
+        "title": "ARCS TRB",
+        "url": "https://tax-review-board.phila.gov/auth/",
+        "icon": "💵"
+      },
+      {
+        "title": "Phila Dox",
+        "url": "http://pdx-app01/recorder/web/login.jsp",
+        "icon": "📜"
+      },
+      {
+        "title": "Philly Code",
+        "url": "https://codelibrary.amlegal.com/codes/philadelphia/latest/overview",
+        "icon": "📝"
+      },
+      {
+        "title": "Philly Legislation",
+        "url": "https://phila.legistar.com/Legislation.aspx",
+        "icon": "⚖️"
+      }
+    ]
+  },
+  {
+    "title": "Maps",
+    "icon": "📂",
+    "blob": "#5a7bff",
+    "children": [
+      {
+        "title": "Building ID",
+        "url": "https://bit.ly/eclipse-building-identifier-map",
+        "icon": "🏢"
+      },
+      {
+        "title": "Street Closures",
+        "url": "https://phl.maps.arcgis.com/apps/webappviewer/index.html?id=e41853e3f1374df5aecc7f4dd09a55d4",
+        "icon": "🚧"
+      },
+      {
+        "title": "Inspector Assignment",
+        "url": "https://phl.maps.arcgis.com/",
+        "icon": "🕵️‍♂️"
+      },
+      {
+        "title": "Open Maps",
+        "url": "https://openmaps.phila.gov/",
+        "icon": "🏙️"
+      },
+      {
+        "title": "Waterway Map",
+        "url": "https://phl.maps.arcgis.com/",
+        "icon": "🌊"
+      },
+      {
+        "title": "Atlas",
+        "url": "https://atlas.phila.gov/",
+        "icon": "📍"
+      },
+      {
+        "title": "Google Maps",
+        "url": "https://www.google.com/maps",
+        "icon": "🧭"
+      }
+    ]
+  },
+  {
+    "title": "Forms",
+    "icon": "📂",
+    "blob": "#6e5494",
+    "children": [
+      {
+        "title": "Internal Eclipse Issue",
+        "url": "https://form.jotform.com/211546744291053",
+        "icon": "🐞"
+      },
+      {
+        "title": "Customer Feedback",
+        "url": "https://form.jotform.com/202103727154041",
+        "icon": "🗣️"
+      },
+      {
+        "title": "Electrical Inspection Agency",
+        "url": "https://form.jotform.com/PhillyLI/EIAissue",
+        "icon": "🔌"
+      },
+      {
+        "title": "Violation Catalog Update",
+        "url": "https://form.jotform.com/213635633826055",
+        "icon": "⚠️"
+      },
+      {
+        "title": "Notice of Completed Repairs",
+        "url": "https://form.jotform.com/200817695228057",
+        "icon": "🔧"
+      },
+      {
+        "title": "GIS Request",
+        "url": "https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjI3NDczMDYsInRhc2tGb3JtSWQiOjExMDUxODh9CTQ4NDU4MDU5MDg4MDYJMDJhMDE5NjAzMGM0NWNkMTM1ODhhZDNkNzFhNzIwMDI4YjhjNjIzMWQzMjAzNTUyM2RmMGM1MmJjNTE0NDA5NA==",
+        "icon": "🗺️"
+      },
+      {
+        "title": "Eclipse Change Request",
+        "url": "https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjI3NDczMDYsInRhc2tGb3JtSWQiOjE0MzY5NDV9CTQ4Njg3NzgyMjgwNjIJOTUzNjQ3ZWY5MGViMTRjZThjOGY5Y2UyZWQxMzc0NmFhNjk4NzM3MDNkMzQ2NzA4OTA3YTcwZWYzN2JiZGY4Yg==",
+        "icon": "🆕"
+      },
+      {
+        "title": "TTDU Request",
+        "url": "https://form.jotform.com/231594382887168",
+        "icon": "📚"
+      }
+    ]
+  },
+  {
+    "title": "Atlas Phones/IVR",
+    "icon": "📂",
+    "blob": "#6e5494",
+    "children": [
+      {
+        "title": "Production",
+        "url": "https://phila.myatlasinsight.com/LCI/Atlas.Insight/#login",
+        "icon": "📱"
+      },
+      {
+        "title": "Test",
+        "url": "https://philatest.myatlasinsight.com/LCI/Atlas.Insight/#login",
+        "icon": "📴"
+      },
+      {
+        "title": "Relay",
+        "url": "https://www.myrelayportal.com/#login",
+        "icon": "📞"
+      }
+    ]
+  },
+  {
+    "title": "My Stuff",
+    "icon": "📂",
+    "blob": "#6e5494",
+    "children": [
+      {
+        "title": "Github",
+        "url": "https://github.com/MarkE63Ward?tab=repositories",
+        "icon": "🐙"
+      },
+      {
+        "title": "License Issuance Checklist",
+        "url": "https://marke63ward.github.io/License-Issuance-Checklist/",
+        "icon": "✅"
+      },
+      {
+        "title": "Job Class & Pay Range Lookup",
+        "url": "https://marke63ward.github.io/Philadelphia-Job-Class-Pay-Range-Lookup/",
+        "icon": "💼"
+      },
+      {
+        "title": "DC 47 Contract Salary Increase Calculator",
+        "url": "https://marke63ward.github.io/dc47-contract-increase-calculator/",
+        "icon": "🧮"
+      },
+      {
+        "title": "Employee Salary Lookup",
+        "url": "https://marke63ward.github.io/employee-salary-lookup/",
+        "icon": "🔍"
+      },
+      {
+        "title": "DC 47 2186 Site",
+        "url": "https://www.afscme2186.org/",
+        "icon": "🤝"
+      },
+      {
+        "title": "Leave Balance Tracker",
+        "url": "https://marke63ward.github.io/Leave-Balance-Tracker/",
+        "icon": "📅"
+      },
+      {
+        "title": "Posse Access Form",
+        "url": "https://marke63ward.github.io/Posse_Access/",
+        "icon": "🔐"
+      }
+    ]
+  }
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -754,5 +1093,6 @@ function buildCalendar(date){
   }
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
