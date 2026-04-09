@@ -1,1114 +1,958 @@
-<html lang="en" data-theme="dark"><head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Marks Homepage</title>
-<meta name="description" content="A simple personal start page with Google search and bookmark cards.">
-<style>
-:root{
-  --bg: #0b1020;
-  --bg-soft: #111731;
-  --text: #e8ecf1;
-  --muted: #a8b3c7;
-  --card: #151b3b;
-  --ring: #3a57e8;
-  --shadow: 0 10px 30px rgba(0,0,0,.35);
-  --radius: 18px;
-  --gap: 16px;
-  --maxw: 1000px;
-  --danger: #ff3b30;
-  --success: #34c759;
-}
-:root[data-theme="light"] {
-  --bg: #f6f7fb;
-  --bg-soft: #ffffff;
-  --text: #0b1020;
-  --muted: #4b5565;
-  --card: #ffffff;
-  --ring: #3556f3;
-  --shadow: 0 10px 30px rgba(0,0,0,.1);
-}
-*,*::before,*::after{box-sizing:border-box;}
-body{
-  margin:0;
-  font: 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  background: radial-gradient(1200px 800px at 70% -100px, rgba(90,123,255,.15), transparent), var(--bg);
-  color: var(--text);
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  padding: 50px;
-  min-height: 100vh;
-  flex-direction: column;
-}
-.wrap{ width: 100%; max-width: var(--maxw); }
-header{
-  display:flex; align-items:center; justify-content:space-between; gap: 12px;
-  margin-bottom: 20px; flex-wrap: wrap;
-}
-.brand{
-  display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.2px;
-}
-.brand .dot{ width:10px; height:10px; border-radius:50%; background:linear-gradient(135deg, #5a7bff, #00d4ff); box-shadow: 0 0 18px rgba(58,87,232,.8); }
-.muted{ color: var(--muted); }
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mark's Dashboard</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#0f1117;--bg2:#1e2433;--bg3:#0f1117;
+      --brd:#2d3748;--brd2:#3d4f63;
+      --tx:#e2e8f0;--tx2:#94a3b8;--tx3:#475569;--tx4:#64748b;
+      --panel:#1e2433;--inp:#0f1117;--inp2:#1e2433;
+    }
+    body.light{
+      --bg:#d8f7f5;--bg2:#f5f1e3;--bg3:#f7f8f8;
+      --brd:#cbd5e1;--brd2:#94a3b8;
+      --tx:#0f172a;--tx2:#334155;--tx3:#475569;--tx4:#64748b;
+      --panel:#cad1f046;--inp:#e6f0fa;--inp2:#ffffff;
+    }
+    body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;}
+    ::-webkit-scrollbar{width:5px;}
+    ::-webkit-scrollbar-thumb{background:#334155;border-radius:10px;}
 
-.controls{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.btn{
-  appearance:none; border:1px solid rgba(255,255,255,.08); background:var(--bg-soft); color:var(--text);
-  padding:10px 14px; border-radius: 999px; cursor:pointer; transition:.2s ease; box-shadow: var(--shadow);
-  font-size: 14px;
+    /* Theme bar */
+    #theme-bar {
+    background: var(--bg2);
+    border: 1px solid var(--brd); 
+    border-radius: 12px;        
+    padding: 8px 16px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+    
+    margin: 20px 24px 10px;           
+    width: fit-content;        
+    margin-left: auto;           
 }
-.btn:hover{ transform: translateY(-1px); }
-.btn.danger{ background: var(--danger); color:#fff; border-color: transparent; }
-.btn.success{ background: var(--success); color:#fff; border-color: transparent; }
-.btn.primary{ background: var(--ring); color:#fff; border-color: transparent; }
+    .th-lbl{font-size:16px;color:var(--tx3);}
+    .th-wrap{position:relative;width:44px;height:24px;flex-shrink:0;}
+    .th-wrap input{opacity:0;width:0;height:0;position:absolute;}
+    .th-track{position:absolute;inset:0;background:#334155;border-radius:24px;cursor:pointer;transition:background .2s;}
+    .th-wrap input:checked + .th-track{background:#3b82f6;}
+    .th-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;pointer-events:none;transition:transform .2s;}
+    .th-wrap input:checked ~ .th-thumb{transform:translateX(20px);}
 
-.search-card{
-  background: var(--card);
-  padding: 22px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  border: 1px solid rgba(255,255,255,.06);
-  margin-bottom: 20px;
-}
+    #auth-gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;}
+    #auth-gate.gone{display:none;}
+    .auth-card{background:var(--panel);border:1px solid var(--brd);border-radius:18px;padding:52px 44px;width:100%;max-width:380px;text-align:center;}
+    .auth-h{font-size:22px;font-weight:700;color:var(--tx);margin-bottom:4px;}
+    .auth-sub{font-size:13px;color:var(--tx4);margin-bottom:30px;}
+    .auth-in{width:100%;padding:16px;background:var(--inp);border:1px solid var(--brd);border-radius:10px;color:var(--tx);font-size:24px;letter-spacing:10px;text-align:center;outline:none;margin-bottom:14px;transition:border-color .2s;}
+    .auth-in:focus{border-color:#3b82f6;}
+    .auth-btn{width:100%;padding:14px;background:#3b82f6;border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;}
+    .auth-btn:hover{background:#2563eb;}
+    .auth-err{color:#ef4444;font-size:13px;margin-top:8px;min-height:18px;}
 
-form.search { display:flex; gap:10px; align-items:center; }
-.search input[type="text"]{
-  width:100%; border: 1.5px solid transparent; outline:none; background: var(--bg-soft);
-  color: var(--text); padding: 14px 16px; border-radius: 12px; font-size: 18px;
-  transition: border-color .15s ease, box-shadow .15s ease;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.05);
-}
-.search input[type="text"]:focus{
-  border-color: var(--ring);
-  box-shadow: 0 0 0 4px color-mix(in oklab, var(--ring) 25%, transparent);
-}
-.search button{
-  border: none; background: var(--ring); color: white; padding: 14px 18px; border-radius: 12px;
-  font-weight: 600; cursor:pointer; transition:.2s ease; box-shadow: var(--shadow); white-space:nowrap;
-}
-.search button:hover{ filter: brightness(1.05); transform: translateY(-1px); }
+    #app{display:none;}
 
-.grid{
-  display:flex;
-  flex-wrap: wrap;
-  gap: var(--gap);
-  justify-content: center;
-}
-.card{
-  position: relative;
-  border-radius: var(--radius);
-  background: var(--card);
-  padding: 16px 20px;
-  border: 1px solid rgba(255,255,255,.06);
-  box-shadow: var(--shadow);
-  display:flex; gap: 12px; align-items:center;
-  text-decoration:none; color: var(--text);
-  transition: transform .16s ease, box-shadow .16s ease;
-  min-width: 180px;
-  flex: 1 1 180px;
-  cursor: pointer;
-}
-.card:hover{ transform: translateY(-2px); }
-.blob{
-  position:absolute; inset:auto -20px -20px auto; width: 120px; height: 120px; filter: blur(24px); opacity:.35;
-  background: radial-gradient(closest-side, var(--blob, #5a7bff), transparent 70%);
-  pointer-events:none;
-}
-.icon{
-  width: 36px; height:36px; display:grid; place-items:center; border-radius: 12px; background: color-mix(in oklab, var(--ring) 18%, transparent);
-  font-size: 20px; flex-shrink:0;
-}
-.card .meta{ display:flex; flex-direction:column; flex:1; min-width:0; }
-.title{ font-weight: 700; font-size: 16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    nav{background:var(--bg2);border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:58px;position:sticky;top:0;z-index:100;}
+    .brand{font-size:18px;font-weight:700;color:var(--tx);}
+    .brand b{color:#3b82f6;}
+    .brand r{color:#f63b3b;}
+    .nav-r{display:flex;align-items:center;gap:10px;}
+    .nav-a{padding:7px 15px;border-radius:8px;font-size:14px;color:var(--tx2);text-decoration:none;font-weight:500;}
+    .nav-a:hover{background:var(--brd);color:var(--tx);}
+    .sign-out{padding:7px 14px;border-radius:8px;font-size:13px;color:var(--tx4);border:1px solid var(--brd);background:transparent;cursor:pointer;}
+    .sign-out:hover{border-color:#ef4444;color:#ef4444;}
 
-/* Edit mode card overlay */
-.card.edit-mode{ border: 2px dashed var(--ring); }
-.card-edit-actions{
-  display:none; position:absolute; top:6px; right:6px; gap:4px; z-index:10;
-}
-.card.edit-mode .card-edit-actions{ display:flex; }
-.edit-icon-btn{
-  width:26px;height:26px;border-radius:8px;border:none;cursor:pointer;font-size:13px;
-  display:grid;place-items:center;transition:.15s;
-}
-.edit-icon-btn.del{ background:var(--danger); color:#fff; }
-.edit-icon-btn.edit{ background:var(--ring); color:#fff; }
+    #clock-bar{display: flex; justify-content: space-around; padding:18px 24px 14px;border-bottom:1px solid var(--brd);}
+    #dt{font-size:42px;font-weight:700;color:rgb(68, 95, 250);}
+    #dsub{font-size:42px;font-weight:700;color:rgb(68, 95, 250);margin-top:3px;}
 
-.back-btn{
-  display:none;
-  margin-bottom: 16px;
-  padding: 10px 16px;
-  background: #3a57e8;
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  cursor:pointer;
-  box-shadow: var(--shadow);
-  font-size:14px;
-}
-.back-btn:hover{ transform: translateY(-1px); }
+    #search-bar{display:flex;justify-content:center;padding:14px 24px 18px;}
+    .sw{position:relative;width:100%;max-width:600px;}
+    .sw svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--tx3);pointer-events:none;}
+    .si{width:100%;padding:12px 16px 12px 44px;background:var(--inp2);border:1px solid var(--brd);border-radius:12px;color:var(--tx);font-size:15px;outline:none;}
+    .si:focus{border-color:#3b82f6;}
 
-/* Edit toolbar */
-#editToolbar{
-  display:none;
-  background: var(--card);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: var(--radius);
-  padding: 14px 18px;
-  margin-bottom: 16px;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-#editToolbar.visible{ display:flex; }
-.edit-status{ font-size:13px; color: var(--muted); margin-left:auto; }
+    #grid{display:grid;grid-template-columns:265px 1fr 350px;gap:16px;padding:0 16px 24px;align-items:start;}
 
-/* Modal base */
-.modal{
-  display:none; position:fixed; z-index:1000; inset:0;
-  background:rgba(0,0,0,.65); align-items:center; justify-content:center;
-  padding: 20px;
-}
-.modal.open{ display:flex; }
-.modal-box{
-  background:var(--bg-soft); color:var(--text);
-  padding:28px; border-radius:var(--radius); box-shadow:var(--shadow);
-  width:100%; max-width:420px;
-}
-.modal-box h3{ margin:0 0 16px; font-size:18px; }
-.modal-box label{ display:block; font-size:13px; color:var(--muted); margin-bottom:4px; margin-top:12px; }
-.modal-box input, .modal-box select{
-  width:100%; padding:10px 12px; border-radius:10px;
-  border:1.5px solid rgba(255,255,255,.1); background:var(--card); color:var(--text);
-  font-size:15px; outline:none;
-}
-.modal-box input:focus{ border-color:var(--ring); }
-.modal-actions{ display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
+    .panel{background:var(--panel);border:1px solid var(--brd);border-radius:16px;padding:18px;}
+    .ptitle{font-size:11px;font-weight:700;color:var(--tx4);text-transform:uppercase;letter-spacing:1.2px;}
 
-/* Token modal */
-#tokenModal .modal-box{ max-width:480px; }
-#tokenModal p{ font-size:14px; color:var(--muted); margin:8px 0; line-height:1.6; }
-#tokenModal a{ color: #5a7bff; }
+    #link-list{list-style:none;display:flex;flex-direction:column;gap:4px;max-height:420px;overflow-y:auto;margin-top:8px;}
+    .li-row{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:10px;cursor:pointer;border:1px solid transparent;font-size:14px;color:var(--tx);transition:background .12s;}
+    .li-row:hover{background:var(--brd);border-color:var(--brd2);}
+    .li-ebtns{display:none;gap:4px;margin-left:auto;}
+    .em-on .li-ebtns{display:flex;}
+    .em-on .li-row{border-style:dashed;border-color:var(--brd);}
+    .lb{padding:3px 7px;border-radius:5px;font-size:10px;border:none;cursor:pointer;font-weight:700;}
+    .lb-e{background:#1d4ed8;color:#fff;}
+    .lb-d{background:#7f1d1d;color:#fca5a5;}
+    .lb-m{background:#334155;color:#94a3b8;}
+    .sm-btn{flex:1;padding:8px 0;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;}
 
-/* Calendar modal */
-.calendar-modal {
-  display: none; position: fixed; z-index: 1000; inset: 0;
-  background: rgba(0,0,0,0.6); align-items: center; justify-content: center;
-}
-.calendar-content {
-  background: var(--bg-soft); color: var(--text); padding: 20px;
-  border-radius: var(--radius); box-shadow: var(--shadow); max-width: 340px; width: 100%;
-}
-.calendar-header {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
-}
-.calendar-header #calendarTitle { font-weight: bold; font-size: 16px; flex: 1; text-align: center; }
-.close-btn { background: #ff3b30; color: white; }
-#calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-#calendar div { padding: 8px; border-radius: 6px; text-align: center; }
-#calendar .header { font-weight: bold; }
-#calendar .today { background: var(--ring); color: white; font-weight: bold; border-radius: 6px; }
+    #cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:4px;}
+    .cd{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:11px;cursor:pointer;color:var(--tx3);transition:background .1s;user-select:none;}
+    .cd:hover{background:var(--brd);color:var(--tx);}
+    .cd.inm{color:var(--tx2);} .cd.wknd{color:#f59e0b;}
+    .cd.tdy{background:#1d4ed8;color:#fff!important;font-weight:700;}
+    .cd.sel{background:#0ea5e9;color:#fff!important;font-weight:700;}
 
-/* Toast */
-#toast{
-  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
-  background:#222d50; color:#fff; padding:12px 22px; border-radius:999px;
-  font-size:14px; box-shadow:var(--shadow); transition: transform .3s ease, opacity .3s ease;
-  opacity:0; pointer-events:none; z-index:9999; white-space:nowrap;
-}
-#toast.show{ transform:translateX(-50%) translateY(0); opacity:1; }
-#toast.error{ background: var(--danger); }
-#toast.ok{ background: #1a5c30; }
+    #todo-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px;}
+    .tc{background:var(--inp);border:1px solid var(--brd);border-left:4px solid #334155;border-radius:14px;padding:16px 18px;cursor:pointer;transition:border-color .15s,transform .1s;display:flex;flex-direction:column;gap:8px;}
+    .tc:hover{border-color:var(--brd2);transform:translateY(-2px);}
+    .tc.p-Top   {border-left-color:#ef4444;} .tc.p-High  {border-left-color:#f97316;}
+    .tc.p-Medium{border-left-color:#eab308;} .tc.p-Low   {border-left-color:#22c55e;}
+    .tc.p-Future{border-left-color:#a855f7;} .tc.done{opacity:.4;}
+    .tc-title{font-size:15px;font-weight:600;color:var(--tx);line-height:1.35;}
+    .badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+    .b-Top{background:#450a0a;color:#fca5a5;} .b-High{background:#431407;color:#fdba74;}
+    .b-Medium{background:#422006;color:#fde68a;} .b-Low{background:#052e16;color:#86efac;}
+    .b-Future{background:#2e1065;color:#d8b4fe;}
+    .tc-tags{display:flex;gap:5px;flex-wrap:wrap;}
+    .ttag{font-size:10px;color:#60a5fa;background:#172554;padding:2px 8px;border-radius:20px;}
+    .tc-due{font-size:10px;color:#94a3b8;font-weight:500;}
+    .tc-hint{font-size:10px;color:#2d3f56;font-style:italic;margin-top:2px;}
 
-.top-time{
-  width: 100%; text-align: center; font-weight: 700; font-size: 32px; margin-bottom: 50px;
-}
+    .fbar{display:flex;gap:8px;flex-wrap:wrap;}
+    .fi{flex:1;min-width:130px;padding:9px 12px;background:var(--inp);border:1px solid var(--brd);border-radius:8px;color:var(--tx);font-size:13px;outline:none;}
+    .fi:focus{border-color:#3b82f6;}
+    .fs{padding:9px 10px;background:var(--inp);border:1px solid var(--brd);border-radius:8px;color:var(--tx2);font-size:13px;outline:none;cursor:pointer;}
+    .tag-cloud{display:flex;gap:6px;flex-wrap:wrap;min-height:4px;}
+    .tp{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid var(--brd);background:var(--inp);color:var(--tx4);cursor:pointer;}
+    .tp.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff;}
 
-footer{ margin-top: 28px; color: var(--muted); font-size: 13px; text-align:center; }
-</style>
+    /* Hyperlink inline modal */
+    #link-popup{position:absolute;background:var(--panel);border:1px solid #3b82f6;border-radius:12px;padding:14px;width:320px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:800;display:none;flex-direction:column;gap:8px;}
+    #link-popup.open{display:flex;}
+    #link-popup input{padding:8px 10px;background:var(--inp);border:1px solid var(--brd);border-radius:7px;color:var(--tx);font-size:13px;outline:none;width:100%;}
+    #link-popup input:focus{border-color:#3b82f6;}
+    #link-popup .lp-row{display:flex;gap:6px;}
+    #link-popup .lp-btn{flex:1;padding:7px;border-radius:7px;font-size:12px;font-weight:600;border:none;cursor:pointer;}
+
+    .todo-form{background:var(--inp);border:1px solid #3b82f6;border-radius:14px;padding:22px;animation:sld .2s ease-out;}
+    @keyframes sld{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+    .fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+    .fl{font-size:10px;font-weight:700;color:var(--tx4);text-transform:uppercase;letter-spacing:.8px;}
+    .fc{padding:10px 12px;background:var(--inp2);border:1px solid var(--brd);border-radius:8px;color:var(--tx);font-size:13px;outline:none;font-family:inherit;width:100%;}
+    .fc:focus{border-color:#3b82f6;}
+    .rich-toolbar{display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap;}
+    .rt-btn{padding:4px 10px;border-radius:5px;background:var(--brd);border:none;color:var(--tx2);font-size:12px;cursor:pointer;font-weight:600;}
+    .rt-btn:hover{color:var(--tx);}
+    .rich-ed{min-height:150px;padding:12px;background:var(--inp2);border:1px solid var(--brd);border-radius:8px;color:var(--tx);font-size:13px;outline:none;line-height:1.65;overflow-y:auto;}
+    .rich-ed:focus{border-color:#3b82f6;}
+    .rich-ed a{color:#60a5fa;text-decoration:underline;}
+    .fbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;}
+    .btn-c{padding:10px 22px;border-radius:8px;background:var(--inp2);border:1px solid var(--brd);color:var(--tx2);font-size:13px;font-weight:600;cursor:pointer;}
+    .btn-s{padding:10px 24px;border-radius:8px;background:#1d4ed8;border:none;color:#fff;font-size:13px;font-weight:600;cursor:pointer;}
+    .btn-s:hover{background:#1e40af;} .btn-s:disabled{opacity:.5;cursor:not-allowed;}
+
+    .mbg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;display:none;align-items:center;justify-content:center;padding:20px;}
+    .mbg.open{display:flex;}
+    .mbox{background:var(--panel);border:1px solid var(--brd);border-radius:20px;padding:32px;width:100%;max-width:600px;position:relative;max-height:90vh;overflow-y:auto;}
+    .mclose{position:absolute;top:16px;right:16px;background:var(--brd);border:none;color:var(--tx2);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;}
+    .mclose:hover{color:var(--tx);}
+    .m-bar{height:4px;border-radius:4px;margin-bottom:20px;}
+    .m-title{font-size:22px;font-weight:700;color:var(--tx);margin-bottom:12px;line-height:1.3;}
+    .m-grid{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;margin-bottom:16px;font-size:13px;}
+    .m-lbl{color:var(--tx4);font-weight:600;} .m-val{color:var(--tx);}
+    .m-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+    .m-nlbl{font-size:11px;font-weight:700;color:var(--tx4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+    .m-notes{font-size:14px;color:var(--tx);line-height:1.75;background:var(--inp);border-radius:10px;padding:16px;border:1px solid var(--brd);min-height:60px;}
+    .m-notes a{color:#60a5fa;text-decoration:underline;}
+    .m-actions{display:flex;gap:10px;margin-top:22px;padding-top:20px;border-top:1px solid var(--brd);flex-wrap:wrap;}
+    .m-btn{padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;min-width:90px;}
+    .m-btn:hover{opacity:.82;}
+
+    .lmbg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:700;display:none;align-items:center;justify-content:center;padding:20px;}
+    .lmbg.open{display:flex;}
+    .lmbox{background:var(--panel);border:1px solid #3b82f6;border-radius:18px;padding:28px;width:100%;max-width:400px;}
+
+    .widget{background:var(--panel);border:1px solid var(--brd);border-radius:16px;padding:16px;}
+    .wt{font-size:11px;font-weight:700;color:var(--tx4);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;}
+    .map-in{width:100%;padding:9px 12px;background:var(--inp);border:1px solid var(--brd);border-radius:8px;color:var(--tx);font-size:13px;outline:none;margin-bottom:10px;}
+    .map-in:focus{border-color:#3b82f6;}
+
+    .spin{display:inline-block;width:20px;height:20px;border:2px solid #334155;border-top-color:#3b82f6;border-radius:50%;animation:sp .7s linear infinite;}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    .empty{text-align:center;padding:56px 20px;color:var(--tx4);font-size:14px;line-height:2;grid-column:1/-1;}
+    .load-center{grid-column:1/-1;display:flex;align-items:center;justify-content:center;padding:48px;}
+  </style>
 </head>
-<body class="clickup-chrome-ext_installed">
-<div class="wrap">
-  <div id="topTime" class="top-time">Thursday, April 2, 2026 at 9:55 AM</div>
+<body>
 
-  <header>
-    <div class="brand" title="Mark's Personal Homepage">
-      <span class="dot" aria-hidden="true"></span>
-      <span>Mark's Homepage</span>
-    </div>
-    <div class="controls">
-      <button id="quickbaseBtn" class="btn" title="Open Quickbase">🗄️ Quickbase</button>
-      <button id="meetingnotesBtn" class="btn" title="Meeting Notes">📝 Meeting Notes</button>
-      <button id="brdBtn" class="btn" title="BRD Creator">📄 BRD Creator</button>
-      <button id="calendarToggle" class="btn" title="Show calendar">📅 Calendar</button>
-      <button id="themeToggle" class="btn" title="Toggle light/dark">🌓 Theme</button>
-      <button id="editToggleBtn" class="btn" title="Edit bookmarks" style="display: none;">✏️ Edit</button>
-    </div>
-  </header>
+<!-- AUTH -->
+<div id="auth-gate">
+  <div class="auth-card">
+    <div style="font-size:40px;margin-bottom:12px;">🔐</div>
+    <div class="auth-h">Mark's Dashboard</div>
+    <div class="auth-sub">Enter your access code to continue</div>
+    <input type="password" class="auth-in" id="auth-in" placeholder="······" maxlength="10"/>
+    <button class="auth-btn" id="auth-btn">Unlock</button>
+    <div class="auth-err" id="auth-err"></div>
+  </div>
+</div>
 
-  <section class="search-card">
-    <form class="search" action="https://www.google.com/search" method="GET" role="search" aria-label="Google search">
-      <input id="q" type="text" name="q" placeholder="Search Google…" autocomplete="off" spellcheck="false" aria-label="Search">
-      <button type="submit" aria-label="Search">Search</button>
-      <input type="hidden" name="hl" value="en">
+<!-- LINK MODAL -->
+<div class="lmbg" id="lm-bg">
+  <div class="lmbox">
+    <div id="lm-title" style="font-size:18px;font-weight:700;color:#f8fafc;margin-bottom:18px;"></div>
+    <div class="fg"><label class="fl">Display Name</label><input type="text" class="fc" id="lm-name"/></div>
+    <div class="fg" id="lm-url-fg"><label class="fl">URL</label><input type="text" class="fc" id="lm-url" placeholder="https://..."/></div>
+    <div class="fg"><label class="fl">Icon / Emoji</label><input type="text" class="fc" id="lm-emoji" placeholder="🔗"/></div>
+    <div class="fbtns" style="margin-top:8px;">
+      <button class="btn-c" onclick="closeLM()">Cancel</button>
+      <button class="btn-s" onclick="saveLM()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="mbg" id="det-bg">
+  <div class="mbox">
+    <button class="mclose" onclick="closeDet()">❌</button>
+    <div class="m-bar"   id="det-bar"></div>
+    <div class="m-title" id="det-title"></div>
+    <div class="m-grid"  id="det-meta"></div>
+    <div class="m-tags"  id="det-tags"></div>
+    <div class="m-nlbl">Notes</div>
+    <div class="m-notes" id="det-notes"></div>
+    <div class="m-actions" id="det-actions"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <nav>
+    <div class="brand">Mark's <r>🔥Firebase</r> <b>Dashboard</b></div>
+    <div class="nav-r">
+      <a href="https://phl-cao.quickbase.com/nav/app/bu9dn5ktp/action/appoverview?from=myqb"
+         target="_blank" rel="noopener" class="nav-a">Quickbase</a>
+      <button class="sign-out" onclick="doLogout()">Sign Out</button>
+    </div>
+  </nav>
+  <!-- THEME TOGGLE BAR -->
+  <div id="theme-bar">
+    <span class="th-lbl">🌙 Dark</span>
+    <label class="th-wrap">
+      <input type="checkbox" id="theme-chk" onchange="toggleTheme()"/>
+      <div class="th-track"></div>
+      <div class="th-thumb"></div>
+    </label>
+    <span class="th-lbl">☀️ Light</span>
+  </div>
+  <!-- HYPERLINK POPUP (replaces ugly browser prompt) -->
+  <div id="link-popup">
+    <div style="font-size:12px;font-weight:700;color:var(--tx4);text-transform:uppercase;letter-spacing:.8px;">Insert Hyperlink</div>
+    <input type="text" id="lp-url" placeholder="https://..."/>
+    <input type="text" id="lp-txt" placeholder="Display text (optional)"/>
+    <div class="lp-row">
+      <button class="lp-btn btn-c" onclick="closeLinkPopup()">Cancel</button>
+      <button class="lp-btn btn-s" onclick="insertLink()">Insert</button>
+    </div>
+  </div>
+  <div id="clock-bar">
+    <div id="dt"></div>
+  <div id="dsub"></div>
+</div>
+  <div id="search-bar">
+    <form class="sw" action="https://www.google.com/search" method="GET" target="_blank">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" name="q" class="si" placeholder="Search Google..."/>
     </form>
-    <div class="muted" style="margin-top:10px; font-size:15px">Tips — Use <code>site:</code> to search within a website | Use quotes for exact matches | Use <code>filetype:</code> to find documents.</div>
-  </section>
-
-  <!-- Edit toolbar -->
-  <div id="editToolbar" class="visible">
-    <button class="btn primary" id="addBookmarkBtn">＋ Add Bookmark</button>
-    <button class="btn primary" id="addFolderBtn">📁 Add Folder</button>
-    <button class="btn success" id="saveGithubBtn">☁️ Save to GitHub</button>
-    <button class="btn danger" id="cancelEditBtn">✖ Cancel</button>
-    <span class="edit-status" id="editStatus">⏳ Saving to GitHub…</span>
   </div>
-
-  <button id="backBtn" class="back-btn" style="display: inline-block;">← Back</button>
-  <div class="grid" id="cards" aria-label="Bookmarks"><div class="card" tabindex="0">
-      
-      <span class="icon">📂</span>
-      <div class="meta">
-        <span class="title">Posse</span>
-
+  <div id="grid">
+    <!-- LEFT -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div class="ptitle">Quick Links</div>
+          <div style="display:flex;gap:6px;">
+            <button id="back-btn" onclick="lBack()" style="display:none;padding:4px 10px;border-radius:6px;background:#2d3748;border:none;color:#94a3b8;font-size:12px;cursor:pointer;">↩️Back</button>
+            <button id="edit-btn" onclick="toggleEM()" style="padding:4px 10px;border-radius:6px;background:#2d3748;border:none;color:#94a3b8;font-size:12px;cursor:pointer;">✏️Edit</button>
+          </div>
+        </div>
+        <div id="em-bar" style="display:none;margin-bottom:8px;">
+          <div style="display:flex;gap:6px;">
+            <button class="sm-btn" style="background:#1d4ed8;color:#fff;" onclick="openLM('link')">New 🔗</button>
+            <button class="sm-btn" style="background:#72712d;color:#fff;" onclick="openLM('folder')">New 📁</button>
+          </div>
+        </div>
+        <ul id="link-list"></ul>
       </div>
-      <span class="blob" style="--blob:#ff9500"></span>
-    </div><div class="card" tabindex="0">
-      
-      <span class="icon">📂</span>
-      <div class="meta">
-        <span class="title">Resources</span>
-
+      <div class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <button onclick="calNav(-1)" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:22px;line-height:1;padding:0 6px;">⬅️</button>
+          <div class="ptitle" id="cal-lbl"></div>
+          <button onclick="calNav(1)"  style="background:none;border:none;color:#64748b;cursor:pointer;font-size:22px;line-height:1;padding:0 6px;">➡️</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;text-align:center;">
+          <div style="font-size:10px;font-weight:700;color:#f59e0b;">Sun</div>
+          <div style="font-size:10px;color:#a8b1bd;">Mon</div>
+          <div style="font-size:10px;color:#a8b1bd;">Tue</div>
+          <div style="font-size:10px;color:#a8b1bd;">Wed</div>
+          <div style="font-size:10px;color:#a8b1bd;">Thu</div>
+          <div style="font-size:10px;color:#a8b1bd;">Fri</div>
+          <div style="font-size:10px;font-weight:700;color:#f59e0b;">Sat</div>
+        </div>
+        <div id="cal-grid"></div>
+        <div id="cal-sel" style="text-align:center;font-size:11px;color:#475569;min-height:14px;margin-top:6px;"></div>
       </div>
-      <span class="blob" style="--blob:#5a7bff"></span>
-    </div><div class="card" tabindex="0">
-      
-      <span class="icon">📂</span>
-      <div class="meta">
-        <span class="title">Sharepoints</span>
-
-      </div>
-      <span class="blob" style="--blob:#5a7bff"></span>
-    </div><div class="card" tabindex="0">
-      
-      <span class="icon">📂</span>
-      <div class="meta">
-        <span class="title">City Sites</span>
-
-      </div>
-      <span class="blob" style="--blob:#6e5494"></span>
-    </div><div class="card" tabindex="0">
-      
-      <span class="icon">📂</span>
-      <div class="meta">
-        <span class="title">Maps</span>
-
-      </div>
-      <span class="blob" style="--blob:#5a7bff"></span>
-    </div><div class="card" tabindex="0">
-      
-      <span class="icon">📂</span>
-      <div class="meta">
-        <span class="title">Forms</span>
-
-      </div>
-      <span class="blob" style="--blob:#6e5494"></span>
-    </div><div class="card" tabindex="0">
-      
-      <span class="icon">📂</span>
-      <div class="meta">
-        <span class="title">Atlas Phones/IVR</span>
-
-      </div>
-      <span class="blob" style="--blob:#6e5494"></span>
-    </div><div class="card" tabindex="0">
-      
-      <span class="icon">📂</span>
-      <div class="meta">
-        <span class="title">My Stuff</span>
-
-      </div>
-      <span class="blob" style="--blob:#6e5494"></span>
-    </div></div>
-
-  <footer>
-    <div>✏️ Click <strong>Edit</strong> to manage bookmarks. Changes sync to GitHub automatically.</div>
-  </footer>
-</div>
-
-<!-- Calendar Modal -->
-<div id="calendarModal" class="calendar-modal">
-  <div class="calendar-content">
-    <div class="calendar-header">
-      <button id="prevMonth" class="btn">◀</button>
-      <span id="calendarTitle"></span>
-      <button id="nextMonth" class="btn">▶</button>
-      <button id="closeCalendar" class="btn close-btn">✖</button>
     </div>
-    <div id="calendar"></div>
-  </div>
-</div>
-
-<!-- Token Setup Modal -->
-<div id="tokenModal" class="modal">
-  <div class="modal-box">
-    <h3>🔑 GitHub Setup</h3>
-    <p>To save bookmarks to GitHub, paste a <strong>Personal Access Token</strong> below. It's stored only in this browser — never in your code.</p>
-    <p><strong>How to get one:</strong> GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → check <code>repo</code> scope → copy it.</p>
-    <p><a href="https://github.com/settings/tokens" target="_blank" rel="noopener">→ Open GitHub Token Settings</a></p>
-    <label>Personal Access Token</label>
-    <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-    <div class="modal-actions">
-      <button class="btn" id="tokenCancelBtn">Cancel</button>
-      <button class="btn primary" id="tokenSaveBtn">Save Token</button>
+    <!-- CENTER -->
+    <div class="panel" style="display:flex;flex-direction:column;gap:14px;min-height:700px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:20px;font-weight:700;color:#f8fafc;">To-Do's</div>
+          <div id="todo-count" style="font-size:12px;color:#2978e6;margin-top:2px;"></div>
+        </div>
+        <button class="btn-s" id="add-btn" onclick="showForm()" style="padding:9px 18px;font-size:13px;">📩 New Item</button>
+      </div>
+      <div id="form-wrap" style="display:none;"></div>
+      <div class="fbar">
+        <input type="text" class="fi" id="s-search" placeholder="Search anything..." oninput="applyF()"/>
+        <select class="fs" id="s-pri" onchange="applyF()">
+          <option value="">All Priorities</option>
+          <option>Top</option><option>High</option><option>Medium</option>
+          <option>Low</option><option>Future State</option>
+        </select>
+        <select class="fs" id="s-status" onchange="applyF()">
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="all">All</option>
+        </select>
+        <select class="fs" id="s-sort" onchange="applyF()">
+          <option value="created">Newest First</option>
+          <option value="due-asc">Due: Soonest</option>
+          <option value="due-desc">Due: Furthest</option>
+        </select>
+      </div>
+      <div class="tag-cloud" id="tag-cloud"></div>
+      <div id="todo-list"><div class="load-center"><div class="spin"></div></div></div>
+    </div>
+    <!-- RIGHT -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="widget">
+        <div class="wt">Maps</div>
+        <form onsubmit="doMap(event)">
+          <input type="text" id="map-in" class="map-in" placeholder="Search address..."/>
+        </form>
+        <iframe id="map-frame" style="width:100%;height:220px;border-radius:10px;border:none;"
+          src="https://maps.google.com/maps?q=Philadelphia,PA&output=embed&hl=en"></iframe>
+      </div>
+      <div class="widget">
+        <div class="wt">Weather</div>
+        <a class="weatherwidget-io"
+          href="https://forecast7.com/en/39d95n75d17/philadelphia/?unit=us"
+          data-label_1="PHILADELPHIA" data-label_2="WEATHER" data-theme="original">
+          PHILADELPHIA WEATHER
+        </a>
+      </div>
     </div>
   </div>
-</div>
+</div><!-- /app -->
 
-<!-- Add/Edit Bookmark Modal -->
-<div id="bookmarkModal" class="modal">
-  <div class="modal-box">
-    <h3 id="bookmarkModalTitle">Add Bookmark</h3>
-    <label>Title</label>
-    <input type="text" id="bmTitle" placeholder="e.g. Google">
-    <label>URL</label>
-    <input type="text" id="bmUrl" placeholder="https://...">
-    <label>Icon (emoji)</label>
-    <input type="text" id="bmIcon" placeholder="🌐" maxlength="4">
-    <div class="modal-actions">
-      <button class="btn" id="bmCancelBtn">Cancel</button>
-      <button class="btn primary" id="bmSaveBtn">Save</button>
-    </div>
-  </div>
-</div>
+<script type="module">
+/* ═════════════════════════
+   SINGLE MODULE SCRIPT — everything in one place.
+   No plain/module split. No race conditions.
+   Firebase imported at top of module, app starts
+   after Firebase is ready. Auth check at very end.
+═══════════════════ */
 
-<!-- Add/Edit Folder Modal -->
-<div id="folderModal" class="modal">
-  <div class="modal-box">
-    <h3 id="folderModalTitle">Add Folder</h3>
-    <label>Folder Name</label>
-    <input type="text" id="folderTitle" placeholder="e.g. Work Tools">
-    <label>Icon (emoji)</label>
-    <input type="text" id="folderIcon" placeholder="📂" maxlength="4">
-    <div class="modal-actions">
-      <button class="btn" id="folderCancelBtn">Cancel</button>
-      <button class="btn primary" id="folderSaveBtn">Save</button>
-    </div>
-  </div>
-</div>
+import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, getDocs,
+  doc, updateDoc, deleteDoc, query, orderBy,
+  serverTimestamp, setDoc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-<!-- Toast -->
-<div id="toast"></div>
+/* ── Firebase init ── */
+const fbApp = initializeApp({
+  apiKey:            "AIzaSyAlmkZaeNK_4tnPx34JYnm8NqxASQvLJ9c",
+  authDomain:        "my-homepage-904cc.firebaseapp.com",
+  projectId:         "my-homepage-904cc",
+  storageBucket:     "my-homepage-904cc.firebasestorage.app",
+  messagingSenderId: "302102025204",
+  appId:             "1:302102025204:web:eebd45c5083e6aa54e9fa1"
+});
+const db = getFirestore(fbApp);
 
-<script>
-// ── CONFIG ────────────────────────────────────────────────────────────────────
-const GITHUB_USER = 'MarkE63Ward';
-const GITHUB_REPO = 'Marks-Homepage';
-const GITHUB_FILE = 'index.html';
-const GITHUB_BRANCH = 'main'; // change to 'master' if needed
+/* ── DB helpers ── */
+async function dbLoadTodos(){
+  const q  = query(collection(db,"todos"), orderBy("createdAt","desc"));
+  const ss = await getDocs(q);
+  return ss.docs.map(d => ({ id:d.id, ...d.data() }));
+}
+async function dbAddTodo(data){
+  return addDoc(collection(db,"todos"), { ...data, createdAt:serverTimestamp() });
+}
+async function dbUpdateTodo(id, data){ return updateDoc(doc(db,"todos",id), data); }
+async function dbDeleteTodo(id)      { return deleteDoc(doc(db,"todos",id)); }
 
-// ── BOOKMARKS DATA ────────────────────────────────────────────────────────────
-let bookmarks = [
-  {
-    "title": "Posse",
-    "icon": "📂",
-    "blob": "#ff9500",
-    "children": [
-      {
-        "title": "Posse Test",
-        "icon": "🧪",
-        "blob": "#ffcc00",
-        "children": [
-          {
-            "title": "Internal Test",
-            "url": "https://eclipsetest-int.phila.gov/phluatest/int/lms/#menuPaneUseKey=1013343_2",
-            "icon": "🖥️",
-            "blob": "#5a7bff"
-          },
-          {
-            "title": "Public Test",
-            "url": "https://eclipsetest-ext.phila.gov/phluatest/pub/lms/Login.aspx",
-            "icon": "👥",
-            "blob": "#34c759"
-          },
-          {
-            "title": "Config Test",
-            "url": "https://eclipsetest-int.phila.gov/phluatest/int/config/Login.aspx",
-            "icon": "⚙️",
-            "blob": "#ff3b30"
-          }
-        ]
-      },
-      {
-        "title": "Posse Training",
-        "icon": "🎓",
-        "blob": "#00bcd4",
-        "children": [
-          {
-            "title": "Internal Training",
-            "url": "https://eclipsetest-int.phila.gov/phltraining/int/lms/#menuPaneUseKey=1013343_2",
-            "icon": "🖥️",
-            "blob": "#5a7bff"
-          },
-          {
-            "title": "Public Training",
-            "url": "https://eclipsetest-ext.phila.gov/phltraining/pub/lms/Login.aspx",
-            "icon": "👥",
-            "blob": "#34c759"
-          },
-          {
-            "title": "Config Training",
-            "url": "https://eclipsetest-int.phila.gov/phltraining/int/config/Login.aspx",
-            "icon": "⚙️",
-            "blob": "#ff3b30"
-          },
-          {
-            "title": "WebUi Public",
-            "url": "https://eclipsetest-ext.phila.gov/phltraining/pub/webui/#",
-            "icon": "🌐"
-          }
-        ]
-      },
-      {
-        "title": "Posse Production",
-        "icon": "🚀",
-        "blob": "#ff4081",
-        "children": [
-          {
-            "title": "Internal Production",
-            "url": "https://eclipseprod.phila.gov/phillylmsprod/int/lms/Default.aspx#menuPaneUseKey=1013343_2",
-            "icon": "🖥️",
-            "blob": "#5a7bff"
-          },
-          {
-            "title": "Public Production",
-            "url": "https://eclipse.phila.gov/phillylmsprod/pub/lms/Login.aspx",
-            "icon": "👥",
-            "blob": "#34c759"
-          },
-          {
-            "title": "Config Production",
-            "url": "https://eclipseprod.phila.gov/phillylmsprod/int/config/Login.aspx",
-            "icon": "⚙️",
-            "blob": "#ff3b30"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "Resources",
-    "icon": "📂",
-    "blob": "#5a7bff",
-    "children": [
-      {
-        "title": "Kronos",
-        "url": "https://philalni.kronos.net/wfcstatic/applications/navigator/html5/dist/container/index.html?version=8.1.9.392#/",
-        "icon": "🕒"
-      },
-      {
-        "title": "One Philly",
-        "url": "https://ess-onephilly.phila.gov/OA_HTML/AppsLocalLogin.jsp",
-        "icon": "💰"
-      },
-      {
-        "title": "Jira",
-        "url": "https://computronix.atlassian.net/servicedesk/customer/portals",
-        "icon": "🐞"
-      },
-      {
-        "title": "Smarter U",
-        "url": "https://philadelphia.smarteru.com/remote-login/login.cfm",
-        "icon": "🎓"
-      },
-      {
-        "title": "Metabase Dashboard",
-        "url": "http://li-metabase.city.phila.local/",
-        "icon": "📊"
-      },
-      {
-        "title": "Rise 360",
-        "url": "https://id.articulate.com/#eyJhdXRob3JpemVRdWVyeSI6eyJjbGllbnRfaWQiOiIwb2FzbWJtbDd0ajhoQTg0QTM1NyIsInNjb3BlIjoib3BlbmlkIG9mZmxpbmVfYWNjZXNzIHByb2ZpbGUgZW1haWwgdXNlcl9zdWJzY3JpcHRpb24iLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vcmlzZS5hcnRpY3VsYXRlLmNvbS9tYW5hZ2UvYXBpL2F1dGgvYXV0aC1jYWxsYmFjayIsImNvZGVfY2hhbGxlbmdlIjoiYlZVN0htdlhHaS1KZV9QQ3J2VmRaX2ZDeXl0dW5WTmtxUWQ2UEpMeGpmRSIsImNvZGVfY2hhbGxlbmdlX21ldGhvZCI6IlMyNTYiLCJzdGF0ZSI6InRKNTIzZjdVb2JZbkppQTVzOUVmdEp6M09DZFc0am5TZ3pxZjdpV01uelkiLCJyZXNvdXJjZSI6Imh0dHBzOi8vcmlzZS5hcnRpY3VsYXRlLmNvbS9tYW5hZ2UifX0=",
-        "icon": "📝"
-      },
-      {
-        "title": "AppExtender",
-        "url": "https://imaging/wx/",
-        "icon": "📐"
-      },
-      {
-        "title": "Wrike",
-        "url": "https://login.wrike.com/login/",
-        "icon": "✅"
-      },
-      {
-        "title": "Tawk",
-        "url": "https://dashboard.tawk.to/login#/dashboard/60e8b093d6e7610a49aa8609",
-        "icon": "💬"
-      },
-      {
-        "title": "QLess",
-        "url": "https://merchant.us2.qless.com/login/",
-        "icon": "⏳"
-      }
-    ]
-  },
-  {
-    "title": "Sharepoints",
-    "icon": "📂",
-    "blob": "#5a7bff",
-    "children": [
-      {
-        "title": "CIU",
-        "url": "https://phila.sharepoint.com/sites/li/ConstructionInspectionsUnit/Shared%20Documents/Forms/AllItems.aspx",
-        "icon": "🛠️"
-      },
-      {
-        "title": "CDU",
-        "url": "https://phila.sharepoint.com/sites/li/CodeDevSP",
-        "icon": "🏛️"
-      },
-      {
-        "title": "CX",
-        "url": "https://cxcanada.sharepoint.com/sites/Philly/Shared%20Documents/Forms/AllItems.aspx",
-        "icon": "💻"
-      }
-    ]
-  },
-  {
-    "title": "City Sites",
-    "icon": "📂",
-    "blob": "#6e5494",
-    "children": [
-      {
-        "title": "L&I",
-        "url": "https://www.phila.gov/departments/department-of-licenses-and-inspections/",
-        "icon": "🗝️"
-      },
-      {
-        "title": "Atlas",
-        "url": "https://atlas.phila.gov/",
-        "icon": "🗺️"
-      },
-      {
-        "title": "Service Directory",
-        "url": "https://www.phila.gov/service-directory/",
-        "icon": "📒"
-      },
-      {
-        "title": "Publications & Forms",
-        "url": "https://www.phila.gov/documents/",
-        "icon": "📋"
-      },
-      {
-        "title": "Permit App Tracker",
-        "url": "https://www.phila.gov/li-permit-tracker/",
-        "icon": "🔍"
-      },
-      {
-        "title": "ARCS TRB",
-        "url": "https://tax-review-board.phila.gov/auth/",
-        "icon": "💵"
-      },
-      {
-        "title": "Phila Dox",
-        "url": "http://pdx-app01/recorder/web/login.jsp",
-        "icon": "📜"
-      },
-      {
-        "title": "Philly Code",
-        "url": "https://codelibrary.amlegal.com/codes/philadelphia/latest/overview",
-        "icon": "📝"
-      },
-      {
-        "title": "Philly Legislation",
-        "url": "https://phila.legistar.com/Legislation.aspx",
-        "icon": "⚖️"
-      }
-    ]
-  },
-  {
-    "title": "Maps",
-    "icon": "📂",
-    "blob": "#5a7bff",
-    "children": [
-      {
-        "title": "Building ID",
-        "url": "https://bit.ly/eclipse-building-identifier-map",
-        "icon": "🏢"
-      },
-      {
-        "title": "Street Closures",
-        "url": "https://phl.maps.arcgis.com/apps/webappviewer/index.html?id=e41853e3f1374df5aecc7f4dd09a55d4",
-        "icon": "🚧"
-      },
-      {
-        "title": "Inspector Assignment",
-        "url": "https://phl.maps.arcgis.com/",
-        "icon": "🕵️‍♂️"
-      },
-      {
-        "title": "Open Maps",
-        "url": "https://openmaps.phila.gov/",
-        "icon": "🏙️"
-      },
-      {
-        "title": "Waterway Map",
-        "url": "https://phl.maps.arcgis.com/",
-        "icon": "🌊"
-      },
-      {
-        "title": "Atlas",
-        "url": "https://atlas.phila.gov/",
-        "icon": "📍"
-      },
-      {
-        "title": "Google Maps",
-        "url": "https://www.google.com/maps",
-        "icon": "🧭"
-      }
-    ]
-  },
-  {
-    "title": "Forms",
-    "icon": "📂",
-    "blob": "#6e5494",
-    "children": [
-      {
-        "title": "Internal Eclipse Issue",
-        "url": "https://form.jotform.com/211546744291053",
-        "icon": "🐞"
-      },
-      {
-        "title": "Customer Feedback",
-        "url": "https://form.jotform.com/202103727154041",
-        "icon": "🗣️"
-      },
-      {
-        "title": "Electrical Inspection Agency",
-        "url": "https://form.jotform.com/PhillyLI/EIAissue",
-        "icon": "🔌"
-      },
-      {
-        "title": "Violation Catalog Update",
-        "url": "https://form.jotform.com/213635633826055",
-        "icon": "⚠️"
-      },
-      {
-        "title": "Notice of Completed Repairs",
-        "url": "https://form.jotform.com/200817695228057",
-        "icon": "🔧"
-      },
-      {
-        "title": "GIS Request",
-        "url": "https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjI3NDczMDYsInRhc2tGb3JtSWQiOjExMDUxODh9CTQ4NDU4MDU5MDg4MDYJMDJhMDE5NjAzMGM0NWNkMTM1ODhhZDNkNzFhNzIwMDI4YjhjNjIzMWQzMjAzNTUyM2RmMGM1MmJjNTE0NDA5NA==",
-        "icon": "🗺️"
-      },
-      {
-        "title": "Eclipse Change Request",
-        "url": "https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjI3NDczMDYsInRhc2tGb3JtSWQiOjE0MzY5NDV9CTQ4Njg3NzgyMjgwNjIJOTUzNjQ3ZWY5MGViMTRjZThjOGY5Y2UyZWQxMzc0NmFhNjk4NzM3MDNkMzQ2NzA4OTA3YTcwZWYzN2JiZGY4Yg==",
-        "icon": "🆕"
-      },
-      {
-        "title": "TTDU Request",
-        "url": "https://form.jotform.com/231594382887168",
-        "icon": "📚"
-      }
-    ]
-  },
-  {
-    "title": "Atlas Phones/IVR",
-    "icon": "📂",
-    "blob": "#6e5494",
-    "children": [
-      {
-        "title": "Production",
-        "url": "https://phila.myatlasinsight.com/LCI/Atlas.Insight/#login",
-        "icon": "📱"
-      },
-      {
-        "title": "Test",
-        "url": "https://philatest.myatlasinsight.com/LCI/Atlas.Insight/#login",
-        "icon": "📴"
-      },
-      {
-        "title": "Relay",
-        "url": "https://www.myrelayportal.com/#login",
-        "icon": "📞"
-      }
-    ]
-  },
-  {
-    "title": "My Stuff",
-    "icon": "📂",
-    "blob": "#6e5494",
-    "children": [
-      {
-        "title": "Github",
-        "url": "https://github.com/MarkE63Ward?tab=repositories",
-        "icon": "🐙"
-      },
-      {
-        "title": "License Issuance Checklist",
-        "url": "https://marke63ward.github.io/License-Issuance-Checklist/",
-        "icon": "✅"
-      },
-      {
-        "title": "Job Class & Pay Range Lookup",
-        "url": "https://marke63ward.github.io/Philadelphia-Job-Class-Pay-Range-Lookup/",
-        "icon": "💼"
-      },
-      {
-        "title": "DC 47 Contract Salary Increase Calculator",
-        "url": "https://marke63ward.github.io/dc47-contract-increase-calculator/",
-        "icon": "🧮"
-      },
-      {
-        "title": "Employee Salary Lookup",
-        "url": "https://marke63ward.github.io/employee-salary-lookup/",
-        "icon": "🔍"
-      },
-      {
-        "title": "DC 47 2186 Site",
-        "url": "https://www.afscme2186.org/",
-        "icon": "🤝"
-      },
-      {
-        "title": "Leave Balance Tracker",
-        "url": "https://marke63ward.github.io/Leave-Balance-Tracker/",
-        "icon": "📅"
-      },
-      {
-        "title": "Posse Access Form",
-        "url": "https://marke63ward.github.io/Posse_Access/",
-        "icon": "🔐"
-      }
-    ]
+async function dbGetLinks(){
+  const d = await getDoc(doc(db,"config","links"));
+  return d.exists() ? (d.data().tree || []) : null;
+}
+async function dbSetLinks(tree){
+  return setDoc(doc(db,"config","links"), { tree });
+}
+
+/* ══════════════════
+   THEME TOGGLE
+══════════════════════════════ */
+window.toggleTheme = ()=>{
+  const isLight = document.getElementById("theme-chk").checked;
+  document.body.classList.toggle("light", isLight);
+  localStorage.setItem("mk_theme", isLight ? "light" : "dark");
+};
+function applyStoredTheme(){
+  const t=localStorage.getItem("mk_theme");
+  if(t==="light"){
+    document.body.classList.add("light");
+    const chk=document.getElementById("theme-chk");
+    if(chk) chk.checked=true;
   }
+}
+
+/* ══════════════════
+   AUTH
+═══════════════════════════ */
+const HASH = "0d619ce5a39ed776feb6a0dcaa02a7af3f852b37e15dd8afdd61081fc91f89b0";
+
+async function sha256(s){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+async function tryAuth(){
+  const h = await sha256(document.getElementById("auth-in").value.trim());
+  if(h === HASH){
+    localStorage.setItem("mk_auth","1");
+    await boot();
+  } else {
+    document.getElementById("auth-err").textContent = "Incorrect code.";
+    document.getElementById("auth-in").value = "";
+  }
+}
+
+window.doLogout = function(){
+  localStorage.removeItem("mk_auth");
+  location.reload();
+};
+
+document.getElementById("auth-btn").addEventListener("click", tryAuth);
+document.getElementById("auth-in").addEventListener("keydown", e=>{ if(e.key==="Enter") tryAuth(); });
+
+/* ═══════════════════
+   BOOT — Firebase is already loaded here
+   because this is a module and all imports
+   resolved before any code runs.
+══════════════════════ */
+async function boot(){
+  /* Show app */
+  document.getElementById("auth-gate").classList.add("gone");
+  document.getElementById("app").style.display = "block";
+  applyStoredTheme();
+
+  /* Sync widgets — these need the DOM visible first */
+  startClock();
+  buildCal();
+
+  /* Weather */
+  if(!document.getElementById("ww-js")){
+    const s = document.createElement("script");
+    s.id  = "ww-js";
+    s.src = "https://weatherwidget.io/js/widget.min.js";
+    document.body.appendChild(s);
+  }
+
+  /* Firebase data — runs after DOM is visible */
+  await Promise.all([ loadLinks(), loadTodos() ]);
+}
+
+/* ═══════════════════════════════
+   CLOCK
+═══════════════════════ */
+function startClock(){
+  function tick(){
+    const n = new Date();
+    document.getElementById("dt").textContent   = n.toLocaleString("en-US",{weekday:"long",hour:"numeric",minute:"2-digit",hour12:true});
+    document.getElementById("dsub").textContent = n.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+  }
+  tick();
+  setInterval(tick, 30000);
+}
+
+/* ════════════════════════════
+   CALENDAR
+═══════════════════ */
+const MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+let calDate=new Date(), calSel=null;
+
+window.calNav = d => { calDate=new Date(calDate.getFullYear(),calDate.getMonth()+d,1); buildCal(); };
+
+function buildCal(){
+  const yr=calDate.getFullYear(), mo=calDate.getMonth();
+  document.getElementById("cal-lbl").textContent = MN[mo]+" "+yr;
+  const g=document.getElementById("cal-grid"); g.innerHTML="";
+  const first=new Date(yr,mo,1).getDay();
+  const dim  =new Date(yr,mo+1,0).getDate();
+  const prev =new Date(yr,mo,0).getDate();
+  const tod  =new Date(); tod.setHours(0,0,0,0);
+  for(let i=first-1;i>=0;i--) addCD(g,prev-i,mo-1,yr,false,tod);
+  for(let d=1;d<=dim;d++)     addCD(g,d,mo,yr,true,tod);
+  const rem=(first+dim)%7===0?0:7-(first+dim)%7;
+  for(let d=1;d<=rem;d++)     addCD(g,d,mo+1,yr,false,tod);
+}
+
+function addCD(g,d,mo,yr,inM,tod){
+  const obj=new Date(yr,mo,d); obj.setHours(0,0,0,0);
+  const dow=obj.getDay();
+  const isT=obj.getTime()===tod.getTime();
+  const isS=calSel&&obj.getTime()===calSel.getTime();
+  let cls="cd";
+  if(inM) cls+=" inm";
+  if((dow===0||dow===6)&&!isT&&!isS) cls+=" wknd";
+  if(isT) cls+=" tdy";
+  if(isS) cls+=" sel";
+  const div=document.createElement("div");
+  div.className=cls; div.textContent=obj.getDate();
+  div.title=DN[obj.getDay()]+", "+MN[obj.getMonth()]+" "+obj.getDate()+", "+obj.getFullYear();
+  div.onclick=()=>{ calSel=obj; document.getElementById("cal-sel").textContent=div.title; buildCal(); };
+  g.appendChild(div);
+}
+
+/* ══════════════════════════════════════
+   MAP
+════════════════════════════════════ */
+window.doMap = e => {
+  e.preventDefault();
+  const q=encodeURIComponent(document.getElementById("map-in").value);
+  document.getElementById("map-frame").src="https://maps.google.com/maps?q="+q+"&output=embed&hl=en";
+};
+
+/* ═══════════════════════
+   QUICK LINKS  (Firebase)
+═════════════════════════════════ */
+let ltree=[], lstack=[], lcur=[], lem=false, lmMode="link", lmIdx=null;
+
+const DEFAULT_LINKS = [
+  {name:"Posse Production",emoji:"🏢",children:[
+    {name:"Production Internal",url:"https://eclipseprod.phila.gov/phillylmsprod/int/lms/"},
+    {name:"Production Public",  url:"https://eclipse.phila.gov/phillylmsprod/pub/lms/"}
+  ]},
+  {name:"Atlas",emoji:"🗺️",url:"https://atlas.phila.gov/"}
 ];
 
-// ── STATE ─────────────────────────────────────────────────────────────────────
-const grid = document.getElementById('cards');
-const backBtn = document.getElementById('backBtn');
-let navStack = []; // stack of [list, parentRef] pairs
-let currentList = bookmarks;
-let editMode = false;
-let editingBookmark = null; // { item, list, index }
-let editingFolder = null;
-
-// ── TOAST ─────────────────────────────────────────────────────────────────────
-let toastTimer;
-function toast(msg, type=''){
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>{ el.className=''; }, 3500);
-}
-
-// ── DATE/TIME ─────────────────────────────────────────────────────────────────
-function updateTopTime(){
-  const now = new Date();
-  const el = document.getElementById('topTime');
-  if(el) el.textContent = now.toLocaleString(undefined, {
-    weekday:'long', month:'long', day:'numeric', year:'numeric',
-    hour:'numeric', minute:'2-digit', hour12:true
-  });
-}
-updateTopTime();
-setInterval(updateTopTime, 60000);
-
-// ── RENDER CARDS ──────────────────────────────────────────────────────────────
-function renderCards(list){
-  currentList = list;
-  grid.innerHTML = '';
-  list.forEach((b, idx) => {
-    const isFolder = !!b.children;
-    const card = document.createElement(b.url && !editMode ? 'a' : 'div');
-    card.className = 'card' + (editMode ? ' edit-mode' : '');
-    card.tabIndex = 0;
-    if(b.url && !editMode){
-      card.href = b.url;
-      card.target = '_blank';
-      card.rel = 'noopener';
-    }
-
-    const editActions = editMode ? `
-      <div class="card-edit-actions">
-        <button class="edit-icon-btn edit" data-idx="${idx}" title="Edit">✎</button>
-        <button class="edit-icon-btn del" data-idx="${idx}" title="Delete">🗑</button>
-      </div>` : '';
-
-    card.innerHTML = `
-      ${editActions}
-      ${b.icon ? `<span class="icon">${b.icon}</span>` : ''}
-      <div class="meta">
-        <span class="title">${b.title}</span>
-
-      </div>
-      <span class="blob" style="--blob:${b.blob || '#5a7bff'}"></span>
-    `;
-
-    grid.appendChild(card);
-
-    // Folder navigation (non-edit mode)
-    if(isFolder && !editMode){
-      card.addEventListener('click', e=>{
-        e.preventDefault();
-        navStack.push(list);
-        renderCards(b.children);
-        backBtn.style.display = 'inline-block';
-      });
-    }
-
-    // Edit/delete buttons
-    if(editMode){
-      card.querySelector('.edit-icon-btn.edit')?.addEventListener('click', e=>{
-        e.stopPropagation();
-        if(isFolder) openFolderModal('edit', b, list, idx);
-        else openBookmarkModal('edit', b, list, idx);
-      });
-      card.querySelector('.edit-icon-btn.del')?.addEventListener('click', e=>{
-        e.stopPropagation();
-        if(confirm(`Delete "${b.title}"?`)){
-          list.splice(idx, 1);
-          renderCards(list);
-        }
-      });
-    }
-  });
-}
-
-// ── BACK BUTTON ───────────────────────────────────────────────────────────────
-backBtn.addEventListener('click', ()=>{
-  const prev = navStack.pop();
-  if(prev){ renderCards(prev); if(navStack.length===0) backBtn.style.display='none'; }
-});
-
-renderCards(bookmarks);
-
-// ── EDIT MODE ─────────────────────────────────────────────────────────────────
-const editToggleBtn = document.getElementById('editToggleBtn');
-const editToolbar = document.getElementById('editToolbar');
-
-editToggleBtn.addEventListener('click', ()=>{
-  editMode = true;
-  editToggleBtn.style.display = 'none';
-  editToolbar.classList.add('visible');
-  renderCards(currentList);
-});
-
-document.getElementById('cancelEditBtn').addEventListener('click', ()=>{
-  editMode = false;
-  editToggleBtn.style.display = '';
-  editToolbar.classList.remove('visible');
-  renderCards(currentList);
-});
-
-// ── ADD BOOKMARK ──────────────────────────────────────────────────────────────
-document.getElementById('addBookmarkBtn').addEventListener('click', ()=>{
-  openBookmarkModal('add', null, currentList, -1);
-});
-document.getElementById('addFolderBtn').addEventListener('click', ()=>{
-  openFolderModal('add', null, currentList, -1);
-});
-
-// ── BOOKMARK MODAL ────────────────────────────────────────────────────────────
-const bookmarkModal = document.getElementById('bookmarkModal');
-
-function openBookmarkModal(mode, item, list, idx){
-  editingBookmark = { item, list, idx, mode };
-  document.getElementById('bookmarkModalTitle').textContent = mode==='add' ? 'Add Bookmark' : 'Edit Bookmark';
-  document.getElementById('bmTitle').value = item?.title || '';
-  document.getElementById('bmUrl').value = item?.url || '';
-  document.getElementById('bmIcon').value = item?.icon || '';
-  bookmarkModal.classList.add('open');
-  document.getElementById('bmTitle').focus();
-}
-
-document.getElementById('bmCancelBtn').addEventListener('click', ()=> bookmarkModal.classList.remove('open'));
-bookmarkModal.addEventListener('click', e=>{ if(e.target===bookmarkModal) bookmarkModal.classList.remove('open'); });
-
-document.getElementById('bmSaveBtn').addEventListener('click', ()=>{
-  const title = document.getElementById('bmTitle').value.trim();
-  const url = document.getElementById('bmUrl').value.trim();
-  const icon = document.getElementById('bmIcon').value.trim();
-  if(!title){ alert('Title is required.'); return; }
-  const { list, idx, mode } = editingBookmark;
-  const obj = { title, url: url||undefined, icon: icon||undefined };
-  if(mode==='add') list.push(obj);
-  else list[idx] = { ...list[idx], ...obj };
-  bookmarkModal.classList.remove('open');
-  renderCards(currentList);
-});
-
-// ── FOLDER MODAL ──────────────────────────────────────────────────────────────
-const folderModal = document.getElementById('folderModal');
-
-function openFolderModal(mode, item, list, idx){
-  editingFolder = { item, list, idx, mode };
-  document.getElementById('folderModalTitle').textContent = mode==='add' ? 'Add Folder' : 'Edit Folder';
-  document.getElementById('folderTitle').value = item?.title || '';
-  document.getElementById('folderIcon').value = item?.icon || '📂';
-  folderModal.classList.add('open');
-  document.getElementById('folderTitle').focus();
-}
-
-document.getElementById('folderCancelBtn').addEventListener('click', ()=> folderModal.classList.remove('open'));
-folderModal.addEventListener('click', e=>{ if(e.target===folderModal) folderModal.classList.remove('open'); });
-
-document.getElementById('folderSaveBtn').addEventListener('click', ()=>{
-  const title = document.getElementById('folderTitle').value.trim();
-  const icon = document.getElementById('folderIcon').value.trim();
-  if(!title){ alert('Folder name is required.'); return; }
-  const { list, idx, mode } = editingFolder;
-  if(mode==='add'){
-    list.push({ title, icon: icon||'📂', children: [] });
-  } else {
-    list[idx] = { ...list[idx], title, icon: icon||'📂' };
-  }
-  folderModal.classList.remove('open');
-  renderCards(currentList);
-});
-
-// ── GITHUB SAVE ───────────────────────────────────────────────────────────────
-document.getElementById('saveGithubBtn').addEventListener('click', async ()=>{
-  const token = localStorage.getItem('gh_token');
-  if(!token){ openTokenModal(true); return; }
-  await pushToGitHub(token);
-});
-
-async function pushToGitHub(token){
-  const statusEl = document.getElementById('editStatus');
-  statusEl.textContent = '⏳ Saving to GitHub…';
+async function loadLinks(){
   try {
-    // 1. Get current file SHA
-    const metaRes = await fetch(
-      `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_FILE}?ref=${GITHUB_BRANCH}`,
-      { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } }
-    );
-    if(!metaRes.ok){
-      const err = await metaRes.json();
-      throw new Error(err.message || 'Could not fetch file from GitHub');
-    }
-    const meta = await metaRes.json();
-    const sha = meta.sha;
-
-    // 2. Build updated file content
-    const newContent = buildUpdatedHTML();
-    const encoded = btoa(unescape(encodeURIComponent(newContent)));
-
-    // 3. Push
-    const pushRes = await fetch(
-      `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
-      {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: `Update bookmarks — ${new Date().toLocaleString()}`,
-          content: encoded,
-          sha,
-          branch: GITHUB_BRANCH
-        })
-      }
-    );
-    if(!pushRes.ok){
-      const err = await pushRes.json();
-      throw new Error(err.message || 'Push failed');
-    }
-    toast('✅ Saved to GitHub! Changes will appear after a moment.', 'ok');
-    statusEl.textContent = 'Saved! ✓';
-    // Exit edit mode automatically
-    editMode = false;
-    editToggleBtn.style.display = '';
-    editToolbar.classList.remove('visible');
-    renderCards(currentList);
+    const data = await dbGetLinks();
+    ltree = (data !== null && data.length > 0) ? data : DEFAULT_LINKS;
   } catch(e){
-    console.error(e);
-    toast('❌ Error: ' + e.message, 'error');
-    statusEl.textContent = 'Save failed — check token or branch name';
-    if(e.message.includes('401') || e.message.includes('credential') || e.message.toLowerCase().includes('bad credential')){
-      localStorage.removeItem('gh_token');
-      openTokenModal(true);
+    console.error("loadLinks error:",e);
+    ltree = DEFAULT_LINKS;
+  }
+  lcur = ltree;
+  drawLinks();
+}
+
+async function saveLinks(){
+  try { await dbSetLinks(ltree); }
+  catch(e){ console.error("saveLinks error:",e); }
+}
+
+function drawLinks(){
+  const ul  =document.getElementById("link-list");
+  const back=document.getElementById("back-btn");
+  const ebar=document.getElementById("em-bar");
+  const ebtn=document.getElementById("edit-btn");
+  ul.innerHTML=""; ul.className=lem?"em-on":"";
+  back.style.display=lstack.length?"block":"none";
+  ebar.style.display=lem?"block":"none";
+  ebtn.textContent=lem?"Done":"Edit";
+  lcur.forEach((item,i)=>{
+    const isF=!!item.children;
+    const li=document.createElement("li"); li.style.listStyle="none";
+    li.innerHTML='<div class="li-row" onclick="lClick('+i+')">'
+      +'<span style="font-size:15px;flex-shrink:0;">'+(item.emoji||(isF?"📂":"🔗"))+'</span>'
+      +'<span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+xss(item.name)+'</span>'
+      +(isF?'<span style="font-size:12px;color:#475569;">▶️</span>':"")
+      +'<div class="li-ebtns" onclick="event.stopPropagation()">'
+        +'<button class="lb lb-m" onclick="mvL('+i+',-1)">↑</button>'
+        +'<button class="lb lb-m" onclick="mvL('+i+',1)">↓</button>'
+        +'<button class="lb lb-e" onclick="editL('+i+')">✏</button>'
+        +'<button class="lb lb-d" onclick="delL('+i+')">✕</button>'
+      +'</div></div>';
+    ul.appendChild(li);
+  });
+}
+
+window.lClick = i => {
+  if(lem)return;
+  const it=lcur[i];
+  if(it.children){lstack.push(lcur);lcur=it.children;drawLinks();}
+  else window.open(it.url,"_blank");
+};
+window.lBack     = ()=>{ lcur=lstack.pop(); drawLinks(); };
+window.toggleEM  = ()=>{ lem=!lem; drawLinks(); };
+window.mvL = (i,d)=>{
+  const j=i+d; if(j<0||j>=lcur.length)return;
+  [lcur[i],lcur[j]]=[lcur[j],lcur[i]]; saveLinks(); drawLinks();
+};
+window.delL = i=>{ if(confirm("Delete?")){ lcur.splice(i,1); saveLinks(); drawLinks(); } };
+window.editL = i=>{
+  lmIdx=i; const it=lcur[i]; lmMode=it.children?"folder":"link";
+  document.getElementById("lm-title").textContent="Edit "+(lmMode==="folder"?"Folder":"Link");
+  document.getElementById("lm-url-fg").style.display=lmMode==="link"?"flex":"none";
+  document.getElementById("lm-name").value=it.name;
+  document.getElementById("lm-url").value=it.url||"";
+  document.getElementById("lm-emoji").value=it.emoji||"";
+  document.getElementById("lm-bg").classList.add("open");
+};
+window.openLM = mode=>{
+  lmMode=mode; lmIdx=null;
+  document.getElementById("lm-title").textContent=mode==="folder"?"Add Folder":"Add Link";
+  document.getElementById("lm-url-fg").style.display=mode==="link"?"flex":"none";
+  ["lm-name","lm-url","lm-emoji"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("lm-bg").classList.add("open");
+};
+window.closeLM = ()=>document.getElementById("lm-bg").classList.remove("open");
+window.saveLM  = ()=>{
+  const name =document.getElementById("lm-name").value.trim();
+  const url  =document.getElementById("lm-url").value.trim();
+  const emoji=document.getElementById("lm-emoji").value.trim()||null;
+  if(!name){alert("Name is required.");return;}
+  if(lmIdx!==null){
+    lcur[lmIdx].name=name; lcur[lmIdx].emoji=emoji;
+    if(lmMode==="link") lcur[lmIdx].url=url;
+  } else {
+    lcur.push(lmMode==="folder"?{name,emoji,children:[]}:{name,url,emoji});
+  }
+  saveLinks(); drawLinks(); closeLM();
+};
+
+/* ═══════════════════════════════════
+   TO-DO'S
+══════════════════════════════════════ */
+let todos=[], editingTodo=null, activeTag=null;
+
+async function loadTodos(){
+  document.getElementById("todo-list").innerHTML='<div class="load-center"><div class="spin"></div></div>';
+  try {
+    todos = await dbLoadTodos();
+  } catch(err){
+    console.error("loadTodos error:",err);
+    document.getElementById("todo-list").innerHTML=
+      '<div class="empty">⚠️ Firebase error: '+xss(err.message)+'</div>';
+    return;
+  }
+  drawTagCloud(); applyF();
+}
+
+function cleanTag(s){ return s.toLowerCase().replace(/\s+/g,""); }
+function parseTags(s){
+  return s.split(/[,\s]+/).map(x=>cleanTag(x.replace(/^#/,""))).filter(x=>x.length>0);
+}
+
+function allTags(){
+  const s=new Set();
+  todos.forEach(t=>(t.tags||[]).forEach(tag=>s.add(tag)));
+  return [...s].sort();
+}
+
+function drawTagCloud(){
+  const w=document.getElementById("tag-cloud"); w.innerHTML="";
+  allTags().forEach(tag=>{
+    const p=document.createElement("div");
+    p.className="tp"+(activeTag===tag?" on":"");
+    p.textContent="#"+tag;
+    p.onclick=()=>{activeTag=activeTag===tag?null:tag; drawTagCloud(); applyF();};
+    w.appendChild(p);
+  });
+}
+
+function fmtDue(s){
+  if(!s)return "";
+  const [yr,mo,dy]=s.split("-");
+  return parseInt(mo,10)+"/"+parseInt(dy,10)+"/"+String(parseInt(yr,10)).slice(-2);
+}
+
+function applyF(){
+  const srch=(document.getElementById("s-search")||{value:""}).value.toLowerCase();
+  const pri =(document.getElementById("s-pri")||{value:""}).value;
+  const stat=(document.getElementById("s-status")||{value:"active"}).value;
+  const sort=(document.getElementById("s-sort")||{value:"created"}).value;
+  let filtered=todos.filter(t=>{
+    if(stat==="active"    &&  t.completed) return false;
+    if(stat==="completed" && !t.completed) return false;
+    if(pri && t.priority!==pri) return false;
+    if(activeTag && !(t.tags||[]).includes(activeTag)) return false;
+    if(srch){
+      const hay=[(t.title||""),(t.notes||""),...(t.tags||[])].join(" ").toLowerCase();
+      if(!hay.includes(srch)) return false;
     }
+    return true;
+  });
+  const active=todos.filter(t=>!t.completed).length;
+  document.getElementById("todo-count").textContent=active+" active · "+todos.length+" total";
+
+  /* Sort */
+  if(sort==="due-asc"){
+    filtered.sort((a,b)=>{
+      if(!a.dueDate && !b.dueDate) return 0;
+      if(!a.dueDate) return 1;
+      if(!b.dueDate) return -1;
+      return a.dueDate.localeCompare(b.dueDate);
+    });
+  } else if(sort==="due-desc"){
+    filtered.sort((a,b)=>{
+      if(!a.dueDate && !b.dueDate) return 0;
+      if(!a.dueDate) return 1;
+      if(!b.dueDate) return -1;
+      return b.dueDate.localeCompare(a.dueDate);
+    });
   }
+  /* "created" keeps default Firestore desc order */
+  const list=document.getElementById("todo-list"); list.innerHTML="";
+  if(!filtered.length){ list.innerHTML='<div class="empty">📋<br>No items match your filters</div>'; return; }
+  filtered.forEach(t=>list.appendChild(makeCard(t)));
+}
+window.applyF = applyF;
+
+function pk(p){return {Top:"Top",High:"High",Medium:"Medium",Low:"Low","Future State":"Future"}[p]||"";}
+function priColor(p){return {Top:"#ef4444",High:"#f97316",Medium:"#eab308",Low:"#22c55e","Future State":"#a855f7"}[p]||"#334155";}
+
+function makeCard(t){
+  const k   =pk(t.priority);
+  const tags=(t.tags||[]).map(tag=>'<span class="ttag">#'+xss(tag)+'</span>').join("");
+  const div =document.createElement("div");
+  div.className="tc"+(k?" p-"+k:"")+(t.completed?" done":"");
+  div.innerHTML=
+    '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">'
+      +'<div class="tc-title">'+xss(t.title||"(no title)")+'</div>'
+      +(k?'<span class="badge b-'+k+'">'+xss(t.priority)+'</span>':"")
+    +'</div>'
+    +(tags?'<div class="tc-tags">'+tags+'</div>':"")
+    +(t.dueDate?'<div class="tc-due">Due '+fmtDue(t.dueDate)+'</div>':"")
+    +'<div class="tc-hint">Tap to open</div>';
+  div.onclick=()=>openDet(t.id);
+  return div;
 }
 
-function buildUpdatedHTML(){
-  // Replace the bookmarks array in the source with the current one
-  const src = document.documentElement.outerHTML;
-  const start = src.indexOf('let bookmarks = [');
-  const end = src.indexOf('\n];', start) + 3;
-  if(start === -1 || end < 3) throw new Error('Could not locate bookmarks in HTML source');
-  const newArr = 'let bookmarks = ' + JSON.stringify(bookmarks, null, 2) + ';';
-  return src.slice(0, start) + newArr + src.slice(end);
+/* Detail modal */
+let detId=null;
+
+function openDet(id){
+  const t=todos.find(x=>x.id===id); if(!t)return;
+  detId=id;
+  document.getElementById("det-bar").style.background=priColor(t.priority);
+  document.getElementById("det-title").textContent=t.title||"(no title)";
+  document.getElementById("det-meta").innerHTML=[
+    ["Priority",t.priority||"—"],
+    ["Created", fmtTs(t.createdAt)],
+    ["Due Date",t.dueDate?fmtDue(t.dueDate):"—"],
+    ["Reminder",t.reminderDate?fmtDue(t.reminderDate):"—"]
+  ].map(([l,v])=>'<span class="m-lbl">'+l+'</span><span class="m-val">'+xss(v)+'</span>').join("");
+  document.getElementById("det-tags").innerHTML=
+    (t.tags||[]).map(tag=>'<span class="ttag">#'+xss(tag)+'</span>').join("")||
+    '<span style="color:#334155;font-size:13px;">No tags</span>';
+  const ne=document.getElementById("det-notes");
+  if(t.notesHtml) ne.innerHTML=t.notesHtml; else ne.textContent=t.notes||"No notes added.";
+  document.getElementById("det-actions").innerHTML=
+    '<button class="m-btn" style="background:#1e3a5f;color:#93c5fd;" onclick="editFromDet()">✏ Edit</button>'
+    +(!t.completed
+      ?'<button class="m-btn" style="background:#052e16;color:#86efac;" onclick="completeTodo()">✓ Complete</button>'
+      :'<button class="m-btn" style="background:#2d3748;color:#94a3b8;" onclick="reopenTodo()">↺ Reopen</button>')
+    +'<button class="m-btn" style="background:#172035;color:#7dd3fc;" onclick="copyItem()">📋 Copy</button>'
+    +'<button class="m-btn" style="background:#450a0a;color:#fca5a5;" onclick="deleteTodo()">🗑 Delete</button>';
+  document.getElementById("det-bg").classList.add("open");
 }
+window.closeDet = ()=>{ document.getElementById("det-bg").classList.remove("open"); detId=null; };
 
-// ── TOKEN MODAL ───────────────────────────────────────────────────────────────
-const tokenModal = document.getElementById('tokenModal');
+window.completeTodo = async()=>{
+  if(!detId)return;
+  await dbUpdateTodo(detId,{completed:true}); closeDet(); await loadTodos();
+};
+window.reopenTodo = async()=>{
+  if(!detId)return;
+  await dbUpdateTodo(detId,{completed:false}); closeDet(); await loadTodos();
+};
+window.deleteTodo = async()=>{
+  if(!detId||!confirm("Delete this item permanently?"))return;
+  await dbDeleteTodo(detId); closeDet(); await loadTodos();
+};
+window.copyItem = ()=>{
+  const t=todos.find(x=>x.id===detId); if(!t)return;
+  const notesText=t.notesHtml?document.getElementById("det-notes").innerText:(t.notes||"None");
+  const txt=[
+    "TITLE:    "+(t.title||""),
+    "PRIORITY: "+(t.priority||"—"),
+    "DUE:      "+(t.dueDate?fmtDue(t.dueDate):"—"),
+    "REMINDER: "+(t.reminderDate?fmtDue(t.reminderDate):"—"),
+    "TAGS:     "+((t.tags||[]).map(x=>"#"+x).join(", ")||"none"),
+    "","NOTES:",notesText
+  ].join("\n");
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btns=[...document.getElementById("det-actions").querySelectorAll(".m-btn")];
+    const b=btns.find(x=>x.textContent.includes("Copy"));
+    if(b){const o=b.textContent;b.textContent="✓ Copied!";setTimeout(()=>b.textContent=o,2000);}
+  });
+};
+window.editFromDet = ()=>{
+  const t=todos.find(x=>x.id===detId); if(!t)return;
+  closeDet(); editingTodo=t; renderForm();
+  document.getElementById("form-wrap").scrollIntoView({behavior:"smooth"});
+};
 
-function openTokenModal(afterSave){
-  tokenModal.classList.add('open');
-  tokenModal._afterSave = afterSave;
-  document.getElementById('tokenInput').value = localStorage.getItem('gh_token') || '';
-}
+/* Form */
+window.showForm = ()=>{ editingTodo=null; renderForm(); };
 
-document.getElementById('tokenCancelBtn').addEventListener('click', ()=> tokenModal.classList.remove('open'));
-tokenModal.addEventListener('click', e=>{ if(e.target===tokenModal) tokenModal.classList.remove('open'); });
-
-document.getElementById('tokenSaveBtn').addEventListener('click', async ()=>{
-  const t = document.getElementById('tokenInput').value.trim();
-  if(!t){ alert('Please paste your token.'); return; }
-  localStorage.setItem('gh_token', t);
-  tokenModal.classList.remove('open');
-  toast('🔑 Token saved!', 'ok');
-  if(tokenModal._afterSave) await pushToGitHub(t);
+window.richCmd = (cmd,val)=>{
+  const ed=document.getElementById("f-notes-ed"); if(!ed)return;
+  ed.focus(); document.execCommand(cmd,false,val||null);
+};
+window.addLink = ()=>{
+  const popup=document.getElementById("link-popup");
+  const ed=document.getElementById("f-notes-ed"); if(!ed)return;
+  /* Position popup near the toolbar */
+  const toolbar=ed.previousElementSibling;
+  const rect=toolbar.getBoundingClientRect();
+  popup.style.top=(rect.bottom+window.scrollY+6)+"px";
+  popup.style.left=rect.left+"px";
+  document.getElementById("lp-url").value="";
+  document.getElementById("lp-txt").value="";
+  popup.classList.add("open");
+  setTimeout(()=>document.getElementById("lp-url").focus(),50);
+};
+window.closeLinkPopup = ()=>{
+  document.getElementById("link-popup").classList.remove("open");
+};
+window.insertLink = ()=>{
+  const url=document.getElementById("lp-url").value.trim();
+  const txt=document.getElementById("lp-txt").value.trim();
+  if(!url){document.getElementById("lp-url").focus();return;}
+  closeLinkPopup();
+  const ed=document.getElementById("f-notes-ed"); if(!ed)return;
+  ed.focus();
+  document.execCommand("insertHTML",false,'<a href="'+xss(url)+'" target="_blank">'+xss(txt||url)+'</a>');
+};
+/* Close popup if clicking outside */
+document.addEventListener("click", e=>{
+  const popup=document.getElementById("link-popup");
+  if(popup.classList.contains("open") && !popup.contains(e.target) && !e.target.closest(".rt-btn")){
+    closeLinkPopup();
+  }
 });
 
-// ── SEARCH SHORTCUT ───────────────────────────────────────────────────────────
-const q = document.getElementById('q');
-window.addEventListener('keydown', e=>{ if(e.key==='/' && document.activeElement!==q){ e.preventDefault(); q.focus(); } });
-window.addEventListener('load', ()=> q.focus());
+function renderForm(){
+  const t=editingTodo||{};
+  const wrap=document.getElementById("form-wrap");
+  wrap.style.display="block";
+  const pris=["Top","High","Medium","Low","Future State"];
+  const priOpts='<option value="">-- Select Priority --</option>'
+    +pris.map(p=>'<option'+(t.priority===p?" selected":"")+'>'+p+'</option>').join("");
+  const notesContent=t.notesHtml||xss(t.notes||"");
+  wrap.innerHTML=
+    '<div class="todo-form">'
+    +'<div style="font-size:13px;font-weight:700;color:#93c5fd;margin-bottom:16px;">'+(editingTodo?"✏ Edit Item":"+ New To-Do")+'</div>'
+    +'<div class="fg"><label class="fl">Title *</label>'
+    +'<input type="text" class="fc" id="f-title" placeholder="What needs to be done?" value="'+xss(t.title||"")+'"/></div>'
+    +'<div class="g3">'
+      +'<div style="display:flex;flex-direction:column;gap:5px;"><label class="fl">Priority</label>'
+      +'<select class="fc" id="f-pri">'+priOpts+'</select></div>'
+      +'<div style="display:flex;flex-direction:column;gap:5px;"><label class="fl">Due Date</label>'
+      +'<input type="date" class="fc" id="f-due" value="'+(t.dueDate||"")+'"/></div>'
+      +'<div style="display:flex;flex-direction:column;gap:5px;"><label class="fl">Reminder</label>'
+      +'<input type="date" class="fc" id="f-remind" value="'+(t.reminderDate||"")+'"/></div>'
+    +'</div>'
+    +'<div class="fg"><label class="fl">Tags — e.g. #work #urgent (auto-lowercased, no spaces)</label>'
+    +'<input type="text" class="fc" id="f-tags" placeholder="#tag1 #tag2" value="'+(t.tags||[]).map(x=>"#"+x).join(" ")+'"/></div>'
+    +'<div class="fg"><label class="fl">Notes</label>'
+    +'<div class="rich-toolbar">'
+      +'<button type="button" class="rt-btn" onclick="richCmd(\'bold\')"><b>B</b></button>'
+      +'<button type="button" class="rt-btn" onclick="richCmd(\'italic\')"><i>I</i></button>'
+      +'<button type="button" class="rt-btn" onclick="richCmd(\'underline\')"><u>U</u></button>'
+      +'<button type="button" class="rt-btn" onclick="richCmd(\'insertUnorderedList\')">Bullet List</button>'
+      +'<button type="button" class="rt-btn" onclick="richCmd(\'insertOrderedList\')">Ordered List</button>'
+      +'<button type="button" class="rt-btn" onclick="addLink()">🔗</button>'
+      +'<button type="button" class="rt-btn" onclick="richCmd(\'removeFormat\')">Clear Format</button>'
+    +'</div>'
+    +'<div class="rich-ed" id="f-notes-ed" contenteditable="true">'+notesContent+'</div></div>'
+    +'<div class="fbtns">'
+    +'<button class="btn-c" onclick="cancelForm()">Cancel</button>'
+    +'<button class="btn-s" id="f-save" onclick="saveForm()">💾Save Item</button>'
+    +'</div></div>';
+  document.getElementById("add-btn").style.display="none";
+  setTimeout(()=>{ const el=document.getElementById("f-title"); if(el)el.focus(); },50);
+}
 
-// ── THEME ─────────────────────────────────────────────────────────────────────
-const applyTheme = t => document.documentElement.setAttribute('data-theme', t);
-applyTheme(localStorage.getItem('theme') || 'dark');
-document.getElementById('themeToggle').addEventListener('click', ()=>{
-  const next = document.documentElement.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
-  applyTheme(next); localStorage.setItem('theme', next);
-});
+window.cancelForm = ()=>{
+  const w=document.getElementById("form-wrap");
+  w.style.display="none"; w.innerHTML="";
+  document.getElementById("add-btn").style.display="block";
+  editingTodo=null;
+};
 
-// ── QUICK BUTTONS ─────────────────────────────────────────────────────────────
-document.getElementById('quickbaseBtn').addEventListener('click', ()=> window.open('https://phl-cao.quickbase.com/nav/app/bu9dn5ktp/action/appoverview?from=myqb','_blank'));
-document.getElementById('meetingnotesBtn').addEventListener('click', ()=> window.open('https://markevansjrcityphila-evansm1.github.io/CDU-Meeting-Notes/','_blank'));
-document.getElementById('brdBtn').addEventListener('click', ()=> window.open('https://marke63ward.github.io/BRD-Creator/','_blank'));
-
-// ── CALENDAR ──────────────────────────────────────────────────────────────────
-const calendarModal = document.getElementById('calendarModal');
-let currentDate = new Date();
-
-document.getElementById('calendarToggle').addEventListener('click', ()=>{ buildCalendar(currentDate); calendarModal.style.display='flex'; });
-document.getElementById('closeCalendar').addEventListener('click', e=>{ e.stopPropagation(); calendarModal.style.display='none'; });
-calendarModal.addEventListener('click', e=>{ if(e.target===calendarModal) calendarModal.style.display='none'; });
-document.getElementById('prevMonth').addEventListener('click', e=>{ e.stopPropagation(); currentDate.setMonth(currentDate.getMonth()-1); buildCalendar(currentDate); });
-document.getElementById('nextMonth').addEventListener('click', e=>{ e.stopPropagation(); currentDate.setMonth(currentDate.getMonth()+1); buildCalendar(currentDate); });
-
-function buildCalendar(date){
-  const year=date.getFullYear(), month=date.getMonth();
-  const firstDay=new Date(year,month,1).getDay(), daysInMonth=new Date(year,month+1,0).getDate();
-  const today=new Date();
-  const calEl=document.getElementById('calendar');
-  calEl.innerHTML='';
-  document.getElementById('calendarTitle').textContent=date.toLocaleString('default',{month:'long',year:'numeric'});
-  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d=>{ const div=document.createElement('div'); div.textContent=d; div.className='header'; calEl.appendChild(div); });
-  for(let i=0;i<firstDay;i++) calEl.appendChild(document.createElement('div'));
-  for(let d=1;d<=daysInMonth;d++){
-    const div=document.createElement('div'); div.textContent=d;
-    if(d===today.getDate()&&month===today.getMonth()&&year===today.getFullYear()) div.className='today';
-    calEl.appendChild(div);
+window.saveForm = async()=>{
+  const title  =document.getElementById("f-title").value.trim();
+  const pri    =document.getElementById("f-pri").value;
+  const due    =document.getElementById("f-due").value;
+  const remind =document.getElementById("f-remind").value;
+  const tags   =parseTags(document.getElementById("f-tags").value);
+  const ed     =document.getElementById("f-notes-ed");
+  const notesHtml=ed.innerHTML.trim();
+  const notes    =ed.innerText.trim();
+  if(!title){alert("Title is required.");return;}
+  const saveBtn=document.getElementById("f-save");
+  saveBtn.textContent="Saving…"; saveBtn.disabled=true;
+  const payload={title,priority:pri||"",dueDate:due,reminderDate:remind,notes,notesHtml,tags};
+  try{
+    if(editingTodo){
+      await dbUpdateTodo(editingTodo.id, payload);
+    } else {
+      await dbAddTodo({...payload, completed:false});
+    }
+    cancelForm(); await loadTodos();
+  } catch(err){
+    console.error("saveForm error:",err);
+    alert("Error saving to Firebase:\n"+err.message);
+    saveBtn.textContent="Save Item"; saveBtn.disabled=false;
   }
+};
+
+/* ══════════════════════════════════════
+   HELPERS
+═══════════════════════════════ */
+function fmtTs(ts){
+  if(!ts)return "—";
+  const d=ts.toDate?ts.toDate():new Date(ts);
+  return d.toLocaleDateString("en-US",{month:"numeric",day:"numeric",year:"2-digit"});
+}
+function xss(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+/* ══════════════════════════
+   ENTRY POINT — runs after all imports
+   resolve (module guarantee)
+══════════════════════════════════════ */
+if(localStorage.getItem("mk_auth")==="1"){
+  boot();
 }
 </script>
+
+</body>
+</html>
 
 
 </body></html>
