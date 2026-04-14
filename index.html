@@ -6,44 +6,98 @@
   <title>Mark's Dashboard</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
-    :root{
-      --bg:#0f1117;--bg2:#1e2433;--bg3:#0f1117;
-      --brd:#2d3748;--brd2:#3d4f63;
-      --tx:#e2e8f0;--tx2:#94a3b8;--tx3:#475569;--tx4:#64748b;
-      --panel:#1e2433;--inp:#0f1117;--inp2:#1e2433;
-    }
-    body.light{
-      --bg:#d8f7f5;--bg2:#f5f1e3;--bg3:#f7f8f8;
-      --brd:#cbd5e1;--brd2:#94a3b8;
-      --tx:#0f172a;--tx2:#334155;--tx3:#475569;--tx4:#64748b;
-      --panel:#cad1f046;--inp:#e6f0fa;--inp2:#ffffff;
-    }
-    body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;}
-    ::-webkit-scrollbar{width:5px;}
-    ::-webkit-scrollbar-thumb{background:#334155;border-radius:10px;}
 
-    /* Theme bar */
-    #theme-bar {
-    background: var(--bg2);
-    border: 1px solid var(--brd); 
-    border-radius: 12px;        
-    padding: 8px 16px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 4px;
-    
-    margin: 20px 24px 10px;           
-    width: fit-content;        
-    margin-left: auto;           
-}
-    .th-lbl{font-size:16px;color:var(--tx3);}
-    .th-wrap{position:relative;width:44px;height:24px;flex-shrink:0;}
-    .th-wrap input{opacity:0;width:0;height:0;position:absolute;}
-    .th-track{position:absolute;inset:0;background:#334155;border-radius:24px;cursor:pointer;transition:background .2s;}
-    .th-wrap input:checked + .th-track{background:#3b82f6;}
-    .th-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;pointer-events:none;transition:transform .2s;}
-    .th-wrap input:checked ~ .th-thumb{transform:translateX(20px);}
+    /* ══════════════════════════
+       THEMES
+    ══════════════════════════ */
+
+    /* DEFAULT — Deep Navy */
+    :root{
+      --bg:#0d1117;--bg2:#161b22;
+      --brd:#21262d;--brd2:#30363d;
+      --tx:#e6edf3;--tx2:#8b949e;--tx3:#484f58;--tx4:#30363d;
+      --panel:#161b22;--inp:#0d1117;--inp2:#21262d;
+      --acc:#58a6ff;--acc2:#1f6feb;
+    }
+    /* AURORA — deep teal/purple */
+    body.t-aurora{
+      --bg:#090d13;--bg2:#0e1621;
+      --brd:#162032;--brd2:#1e3048;
+      --tx:#cdd9e5;--tx2:#768390;--tx3:#444c56;--tx4:#6e7072;
+      --panel:#0e1621;--inp:#090d13;--inp2:#162032;
+      --acc:#79c0ff;--acc2:#388bfd;
+    }
+    /* OBSIDIAN — warm charcoal with gold */
+    body.t-obsidian{
+      --bg:#111111;--bg2:#1a1a1a;
+      --brd:#2a2a2a;--brd2:#3a3a3a;
+      --tx:#efefef;--tx2:#999;--tx3:#555;--tx4:#333;
+      --panel:#1a1a1a;--inp:#111;--inp2:#222;
+      --acc:#f0a500;--acc2:#c87800;
+    }
+    /* COBALT — Cobalt2 VS Code inspired */
+    body.t-cobalt{
+      --bg:#193549;--bg2:#1f4662;
+      --brd:#234e6e;--brd2:#2e6a96;
+      --tx:#ffffff;--tx2:#9fc4d8;--tx3:#4e8ea8;--tx4:#2e6a96;
+      --panel:#1f4662;--inp:#193549;--inp2:#234e6e;
+      --acc:#ffc600;--acc2:#e6b000;
+    }
+    /* FOG — muted blue-grey (medium) */
+    body.t-fog{
+      --bg:#e8ecf0;--bg2:#f4f6f8;
+      --brd:#c8d0d8;--brd2:#a0aab4;
+      --tx:#1c2730;--tx2:#445566;--tx3:#6b7c8d;--tx4:#8898a8;
+      --panel:#f4f6f8;--inp:#dde3e8;--inp2:#eaecef;
+      --acc:#2563eb;--acc2:#1d4ed8;
+    }
+    /* PAPER — warm cream light */
+    body.t-paper{
+      --bg:#faf8f5;--bg2:#ffffff;
+      --brd:#e8e0d5;--brd2:#c8bfb0;
+      --tx:#1a1512;--tx2:#5c5248;--tx3:#8c8078;--tx4:#b0a898;
+      --panel:#ffffff;--inp:#f5f2ee;--inp2:#fffffe;
+      --acc:#c2410c;--acc2:#9a3412;
+    }
+
+    body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;transition:background .25s,color .25s;}
+    ::-webkit-scrollbar{width:5px;}
+    ::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:10px;}
+
+    /* ── THEME PICKER ── */
+    .theme-picker{position:relative;}
+    .theme-btn{display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:8px;background:var(--inp2);border:1px solid var(--brd2);color:var(--tx2);font-size:13px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+    .theme-btn:hover{border-color:var(--acc);color:var(--tx);}
+    .t-swatch{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 2px var(--brd2);}
+    .theme-dropdown{position:absolute;top:calc(100% + 10px);right:0;background:var(--panel);border:1px solid var(--brd2);border-radius:14px;padding:6px;display:none;flex-direction:column;gap:2px;min-width:200px;z-index:300;box-shadow:0 16px 48px rgba(0,0,0,.5);}
+    .theme-dropdown.open{display:flex;}
+    .theme-opt{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:9px;cursor:pointer;font-size:13px;color:var(--tx2);transition:background .1s;}
+    .theme-opt:hover,.theme-opt.active{background:var(--inp2);color:var(--tx);}
+    .t-dot{width:18px;height:18px;border-radius:50%;flex-shrink:0;}
+    .t-type{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);padding:4px 12px 2px;margin-top:2px;}
+
+    /* ── NAV DROPDOWNS (mobile tools) ── */
+    .nav-drop{position:relative;}
+    .nav-drop-btn{display:none;align-items:center;gap:5px;padding:7px 12px;border-radius:8px;background:transparent;border:1px solid var(--brd);color:var(--tx2);font-size:13px;cursor:pointer;font-weight:500;transition:all .15s;}
+    .nav-drop-btn:hover,.nav-drop-btn.open-state{background:var(--inp2);color:var(--tx);}
+    .nav-panel{position:fixed;top:58px;right:0;left:0;background:var(--bg2);border-bottom:1px solid var(--brd2);padding:16px;display:none;z-index:250;box-shadow:0 8px 32px rgba(0,0,0,.5);max-height:80vh;overflow-y:auto;}
+    .nav-panel.open{display:block;}
+    @media(max-width:768px){
+      .nav-drop-btn{display:flex;}
+      #left-col,#right-col{display:none!important;}
+      #center-col #todo-list{grid-template-columns:1fr;}
+      #grid{grid-template-columns:1fr!important;padding:0 10px 16px;}
+      #clock-bar{padding:12px 16px 10px;}
+      #dt{font-size:20px;}
+      #search-bar{padding:10px 12px 12px;}
+      .sw{max-width:100%;}
+      .fbar{flex-direction:column;}
+      .fi,.fs{width:100%;min-width:unset;}
+      .g3{grid-template-columns:1fr;}
+      .mbox{padding:20px;border-radius:14px;max-width:100%;}
+      .lmbox{padding:20px;}
+      .theme-dropdown{right:0;left:auto;}
+    }
 
     #auth-gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;}
     #auth-gate.gone{display:none;}
@@ -59,26 +113,25 @@
     #app{display:none;}
 
     nav{background:var(--bg2);border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:58px;position:sticky;top:0;z-index:100;}
-    .brand{font-size:18px;font-weight:700;color:var(--tx);}
+    .brand{font-size:18px;font-weight:700;color:var(--tx);display:flex;gap:5px;align-items:center;}
     .brand b{color:#3b82f6;}
-    .brand r{color:#f63b3b;}
     .nav-r{display:flex;align-items:center;gap:10px;}
     .nav-a{padding:7px 15px;border-radius:8px;font-size:14px;color:var(--tx2);text-decoration:none;font-weight:500;}
     .nav-a:hover{background:var(--brd);color:var(--tx);}
     .sign-out{padding:7px 14px;border-radius:8px;font-size:13px;color:var(--tx4);border:1px solid var(--brd);background:transparent;cursor:pointer;}
     .sign-out:hover{border-color:#ef4444;color:#ef4444;}
 
-    #clock-bar{display: flex; justify-content: space-around; padding:18px 24px 14px;border-bottom:1px solid var(--brd);}
-    #dt{font-size:42px;font-weight:700;color:rgb(68, 95, 250);}
-    #dsub{font-size:42px;font-weight:700;color:rgb(68, 95, 250);margin-top:3px;}
+    #clock-bar{padding:16px 24px;border-bottom:1px solid var(--brd);display:flex;align-items:baseline;justify-content:space-evenly;gap:16px;}
+    #dt{font-size:42px;font-weight:300;color:var(--tx);text-align:center;}
+    #dsub{font-size:42px;color:var(--tx2);text-align:center;}
 
-    #search-bar{display:flex;justify-content:center;padding:14px 24px 18px;}
+    #search-bar{padding:14px 24px 18px;display:flex;justify-content:center;}
     .sw{position:relative;width:100%;max-width:600px;}
     .sw svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--tx3);pointer-events:none;}
     .si{width:100%;padding:12px 16px 12px 44px;background:var(--inp2);border:1px solid var(--brd);border-radius:12px;color:var(--tx);font-size:15px;outline:none;}
     .si:focus{border-color:#3b82f6;}
 
-    #grid{display:grid;grid-template-columns:265px 1fr 350px;gap:16px;padding:0 16px 24px;align-items:start;}
+    #grid{display:grid;grid-template-columns:265px 1fr 400px;gap:16px;padding:0 16px 24px;align-items:start;}
 
     .panel{background:var(--panel);border:1px solid var(--brd);border-radius:16px;padding:18px;}
     .ptitle{font-size:11px;font-weight:700;color:var(--tx4);text-transform:uppercase;letter-spacing:1.2px;}
@@ -116,7 +169,7 @@
     .tc-tags{display:flex;gap:5px;flex-wrap:wrap;}
     .ttag{font-size:10px;color:#60a5fa;background:#172554;padding:2px 8px;border-radius:20px;}
     .tc-due{font-size:10px;color:#94a3b8;font-weight:500;}
-    .tc-hint{font-size:10px;color:#2d3f56;font-style:italic;margin-top:2px;}
+    .tc-hint{font-size:10px;color:#60a5fa;font-style:italic;margin-top:2px;}
 
     .fbar{display:flex;gap:8px;flex-wrap:wrap;}
     .fi{flex:1;min-width:130px;padding:9px 12px;background:var(--inp);border:1px solid var(--brd);border-radius:8px;color:var(--tx);font-size:13px;outline:none;}
@@ -182,6 +235,58 @@
     @keyframes sp{to{transform:rotate(360deg)}}
     .empty{text-align:center;padding:56px 20px;color:var(--tx4);font-size:14px;line-height:2;grid-column:1/-1;}
     .load-center{grid-column:1/-1;display:flex;align-items:center;justify-content:center;padding:48px;}
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media(max-width:768px){
+      /* hide desktop sections, show mobile nav */
+      #mob-nav{display:flex;}
+      body{padding-bottom:60px;}
+
+      /* nav simplify */
+      #nav-qb{display:none;}
+      #theme-picker .theme-btn span:last-child{display:none;} /* hide name, keep swatch */
+
+      /* clock smaller */
+      #dt{font-size:18px;}
+      #dsub{font-size:12px;}
+      #clock-bar{padding:12px 16px 10px;}
+
+      /* search full width */
+      #search-bar{padding:10px 12px 12px;}
+      .sw{max-width:100%;}
+
+      /* grid collapses to single column */
+      #grid{grid-template-columns:1fr;padding:0 10px 16px;gap:12px;}
+
+      /* left column (links + cal) hidden by default, shown by tab */
+      #left-col{display:none;}
+      #left-col.mob-active{display:flex;}
+
+      /* right col (map/weather) hidden by default */
+      #right-col{display:none;}
+      #right-col.mob-active{display:flex;}
+
+      /* center col always full width */
+      #center-col{display:flex;}
+
+      /* todo 1 column on mobile */
+      #todo-list{grid-template-columns:1fr;}
+
+      /* filters stack */
+      .fbar{flex-direction:column;}
+      .fi,.fs{width:100%;min-width:unset;}
+
+      /* form 1 col */
+      .g3{grid-template-columns:1fr;}
+
+      /* modals full screen */
+      .mbox{padding:20px;border-radius:14px;}
+      .lmbox{padding:20px;}
+    }
+    @media(min-width:769px){
+      /* ensure left/right cols always visible on desktop */
+      #left-col,#right-col{display:flex!important;}
+    }
   </style>
 </head>
 <body>
@@ -215,7 +320,7 @@
 <!-- DETAIL MODAL -->
 <div class="mbg" id="det-bg">
   <div class="mbox">
-    <button class="mclose" onclick="closeDet()">❌</button>
+    <button class="mclose" onclick="closeDet()">✕</button>
     <div class="m-bar"   id="det-bar"></div>
     <div class="m-title" id="det-title"></div>
     <div class="m-grid"  id="det-meta"></div>
@@ -229,23 +334,118 @@
 <!-- APP -->
 <div id="app">
   <nav>
-    <div class="brand">Mark's <r>🔥Firebase</r> <b>Dashboard</b></div>
+    <a class="brand" href="https://console.firebase.google.com/project/my-homepage-904cc/overview" target="_blank" rel="noopener" style="text-decoration:none;">Mark's <b style="color:#ef4444">Firebase</b> <b style="color:rgb(45, 45, 255);">Dashboard</b></a>
     <div class="nav-r">
       <a href="https://phl-cao.quickbase.com/nav/app/bu9dn5ktp/action/appoverview?from=myqb"
-         target="_blank" rel="noopener" class="nav-a">Quickbase</a>
+         target="_blank" rel="noopener" class="nav-a">💽Quickbase</a>
+      <a href="https://markevansjrcityphila-evansm1.github.io/CDU-Meeting-Notes/" class="nav-a" id="nav-placeholder">📝Meeting Notes</a>
+
+      <!-- MOBILE TOOL DROPDOWNS — hidden on desktop via CSS -->
+      <div class="nav-drop">
+        <button class="nav-drop-btn" id="nd-links-btn" onclick="toggleNavPanel('nd-links')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Links
+        </button>
+        <div class="nav-panel" id="nd-links">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div class="ptitle">Quick Links</div>
+            <div style="display:flex;gap:6px;">
+              <button id="back-btn-m" onclick="lBack();buildMobLinks();" style="display:none;padding:4px 10px;border-radius:6px;background:var(--inp2);border:1px solid var(--brd);color:var(--tx2);font-size:12px;cursor:pointer;">↩️</button>
+              <button onclick="toggleEM()" style="padding:4px 10px;border-radius:6px;background:var(--inp2);border:1px solid var(--brd);color:var(--tx2);font-size:12px;cursor:pointer;" id="edit-btn-m">✏️</button>
+            </div>
+          </div>
+          <div id="em-bar-m" style="display:none;margin-bottom:8px;">
+            <div style="display:flex;gap:6px;">
+              <button class="sm-btn" style="background:var(--acc);color:#fff;" onclick="openLM('link')">+ Link</button>
+              <button class="sm-btn" style="background:#78350f;color:#fde68a;" onclick="openLM('folder')">+ Folder</button>
+            </div>
+          </div>
+          <ul id="link-list-m" style="list-style:none;display:flex;flex-direction:column;gap:4px;"></ul>
+        </div>
+      </div>
+
+      <div class="nav-drop">
+        <button class="nav-drop-btn" id="nd-cal-btn" onclick="toggleNavPanel('nd-cal')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Calendar
+        </button>
+        <div class="nav-panel" id="nd-cal">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <button onclick="calNav(-1)" style="background:none;border:none;color:var(--tx2);cursor:pointer;font-size:22px;line-height:1;padding:0 6px;">⏪</button>
+            <div class="ptitle" id="cal-lbl-m"></div>
+            <button onclick="calNav(1)" style="background:none;border:none;color:var(--tx2);cursor:pointer;font-size:22px;line-height:1;padding:0 6px;">⏩</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;text-align:center;">
+            <div style="font-size:10px;font-weight:700;color:#f59e0b;">Sun</div>
+            <div style="font-size:10px;color:var(--tx3);">Mon</div><div style="font-size:10px;color:var(--tx3);">Tue</div>
+            <div style="font-size:10px;color:var(--tx3);">Wed</div><div style="font-size:10px;color:var(--tx3);">Thu</div>
+            <div style="font-size:10px;color:var(--tx3);">Fri</div>
+            <div style="font-size:10px;font-weight:700;color:#f59e0b;">Sat</div>
+          </div>
+          <div id="cal-grid-m"></div>
+          <div id="cal-sel-m" style="text-align:center;font-size:11px;color:var(--tx3);min-height:14px;margin-top:6px;"></div>
+        </div>
+      </div>
+
+      <div class="nav-drop">
+        <button class="nav-drop-btn" id="nd-map-btn" onclick="toggleNavPanel('nd-map')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 1 8 8c0 5.25-8 14-8 14S4 15.25 4 10a8 8 0 0 1 8-8z"/></svg>
+          Map
+        </button>
+        <div class="nav-panel" id="nd-map">
+          <div class="ptitle" style="margin-bottom:10px;">Maps &amp; Weather</div>
+          <form onsubmit="doMapMob(event)" style="margin-bottom:10px;">
+            <input type="text" id="map-in-m" class="map-in" placeholder="Search address..."/>
+          </form>
+          <iframe id="map-frame-m" style="width:100%;height:200px;border-radius:10px;border:none;margin-bottom:12px;"
+            src="https://maps.google.com/maps?q=Philadelphia,PA&output=embed&hl=en"></iframe>
+          <a class="weatherwidget-io" id="weather-mob"
+            href="https://forecast7.com/en/39d95n75d17/philadelphia/?unit=us"
+            data-label_1="PHILADELPHIA" data-label_2="WEATHER" data-theme="original">
+            PHILADELPHIA WEATHER
+          </a>
+        </div>
+      </div>
+
+      <!-- THEME PICKER -->
+      <div class="theme-picker" id="theme-picker">
+        <button class="theme-btn" onclick="toggleThemeMenu()">
+          <span class="t-swatch" id="theme-swatch-cur" style="background:var(--acc);"></span>
+          <span id="theme-name-cur">Default</span> ▾
+        </button>
+        <div class="theme-dropdown" id="theme-dropdown">
+          <div class="t-type">Dark</div>
+          <div class="theme-opt" onclick="setTheme('')">
+            <div class="t-dot" style="background:#161b22;border:3px solid #58a6ff;"></div>
+            <div><div style="font-weight:600;color:var(--tx);">Default</div><div style="font-size:11px;color:var(--tx3);">Deep navy blue</div></div>
+          </div>
+          <div class="theme-opt" onclick="setTheme('t-aurora')">
+            <div class="t-dot" style="background:#0e1621;border:3px solid #79c0ff;"></div>
+            <div><div style="font-weight:600;color:var(--tx);">Aurora</div><div style="font-size:11px;color:var(--tx3);">Teal-blue deep</div></div>
+          </div>
+          <div class="theme-opt" onclick="setTheme('t-obsidian')">
+            <div class="t-dot" style="background:#1a1a1a;border:3px solid #f0a500;"></div>
+            <div><div style="font-weight:600;color:var(--tx);">Obsidian</div><div style="font-size:11px;color:var(--tx3);">Charcoal &amp; gold</div></div>
+          </div>
+          <div class="theme-opt" onclick="setTheme('t-cobalt')">
+            <div class="t-dot" style="background:#1f4662;border:3px solid #ffc600;"></div>
+            <div><div style="font-weight:600;color:var(--tx);">Cobalt</div><div style="font-size:11px;color:var(--tx3);">Cobalt2 inspired</div></div>
+          </div>
+          <div class="t-type" style="margin-top:4px;">Light</div>
+          <div class="theme-opt" onclick="setTheme('t-fog')">
+            <div class="t-dot" style="background:#e8ecf0;border:3px solid #2563eb;"></div>
+            <div><div style="font-weight:600;color:var(--tx);">Fog</div><div style="font-size:11px;color:var(--tx3);">Cool blue-grey</div></div>
+          </div>
+          <div class="theme-opt" onclick="setTheme('t-paper')">
+            <div class="t-dot" style="background:#faf8f5;border:3px solid #c2410c;"></div>
+            <div><div style="font-weight:600;color:var(--tx);">Paper</div><div style="font-size:11px;color:var(--tx3);">Warm cream</div></div>
+          </div>
+        </div>
+      </div>
+
       <button class="sign-out" onclick="doLogout()">Sign Out</button>
     </div>
   </nav>
-  <!-- THEME TOGGLE BAR -->
-  <div id="theme-bar">
-    <span class="th-lbl">🌙 Dark</span>
-    <label class="th-wrap">
-      <input type="checkbox" id="theme-chk" onchange="toggleTheme()"/>
-      <div class="th-track"></div>
-      <div class="th-thumb"></div>
-    </label>
-    <span class="th-lbl">☀️ Light</span>
-  </div>
   <!-- HYPERLINK POPUP (replaces ugly browser prompt) -->
   <div id="link-popup">
     <div style="font-size:12px;font-weight:700;color:var(--tx4);text-transform:uppercase;letter-spacing:.8px;">Insert Hyperlink</div>
@@ -256,10 +456,7 @@
       <button class="lp-btn btn-s" onclick="insertLink()">Insert</button>
     </div>
   </div>
-  <div id="clock-bar">
-    <div id="dt"></div>
-  <div id="dsub"></div>
-</div>
+  <div id="clock-bar"><div id="dt"></div><div id="dsub"></div></div>
   <div id="search-bar">
     <form class="sw" action="https://www.google.com/search" method="GET" target="_blank">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -270,50 +467,48 @@
   </div>
   <div id="grid">
     <!-- LEFT -->
-    <div style="display:flex;flex-direction:column;gap:16px;">
+    <div id="left-col" style="display:flex;flex-direction:column;gap:16px;">
       <div class="panel">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
           <div class="ptitle">Quick Links</div>
           <div style="display:flex;gap:6px;">
-            <button id="back-btn" onclick="lBack()" style="display:none;padding:4px 10px;border-radius:6px;background:#2d3748;border:none;color:#94a3b8;font-size:12px;cursor:pointer;">↩️Back</button>
-            <button id="edit-btn" onclick="toggleEM()" style="padding:4px 10px;border-radius:6px;background:#2d3748;border:none;color:#94a3b8;font-size:12px;cursor:pointer;">✏️Edit</button>
+            <button id="back-btn" onclick="lBack()" style="display:none;padding:4px 10px;border-radius:6px;background:#2d3748;border:none;color:#94a3b8;font-size:18px;cursor:pointer;">↩️</button>
+            <button id="edit-btn" onclick="toggleEM()" style="padding:4px 10px;border-radius:6px;background:#2d3748;border:none;color:#94a3b8;font-size:16px;cursor:pointer;">✏️</button>
           </div>
         </div>
         <div id="em-bar" style="display:none;margin-bottom:8px;">
           <div style="display:flex;gap:6px;">
-            <button class="sm-btn" style="background:#1d4ed8;color:#fff;" onclick="openLM('link')">New 🔗</button>
-            <button class="sm-btn" style="background:#72712d;color:#fff;" onclick="openLM('folder')">New 📁</button>
+            <button class="sm-btn" style="background:#1d4ed8;color:#fff;" onclick="openLM('link')">+ Link</button>
+            <button class="sm-btn" style="background:#78710f;color:#fde68a;" onclick="openLM('folder')">+ Folder</button>
           </div>
         </div>
         <ul id="link-list"></ul>
       </div>
       <div class="panel">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <button onclick="calNav(-1)" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:22px;line-height:1;padding:0 6px;">⬅️</button>
+          <button onclick="calNav(-1)" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:22px;line-height:1;padding:0 6px;">⏪</button>
           <div class="ptitle" id="cal-lbl"></div>
-          <button onclick="calNav(1)"  style="background:none;border:none;color:#64748b;cursor:pointer;font-size:22px;line-height:1;padding:0 6px;">➡️</button>
+          <button onclick="calNav(1)"  style="background:none;border:none;color:#64748b;cursor:pointer;font-size:22px;line-height:1;padding:0 6px;">⏩</button>
         </div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;text-align:center;">
           <div style="font-size:10px;font-weight:700;color:#f59e0b;">Sun</div>
-          <div style="font-size:10px;color:#a8b1bd;">Mon</div>
-          <div style="font-size:10px;color:#a8b1bd;">Tue</div>
-          <div style="font-size:10px;color:#a8b1bd;">Wed</div>
-          <div style="font-size:10px;color:#a8b1bd;">Thu</div>
-          <div style="font-size:10px;color:#a8b1bd;">Fri</div>
+          <div style="font-size:10px;color:#71829b;">Mon</div><div style="font-size:10px;color:#71829b;">Tue</div>
+          <div style="font-size:10px;color:#71829b;">Wed</div><div style="font-size:10px;color:#71829b;">Thu</div>
+          <div style="font-size:10px;color:#71829b;">Fri</div>
           <div style="font-size:10px;font-weight:700;color:#f59e0b;">Sat</div>
         </div>
         <div id="cal-grid"></div>
-        <div id="cal-sel" style="text-align:center;font-size:11px;color:#475569;min-height:14px;margin-top:6px;"></div>
+        <div id="cal-sel" style="text-align:center;font-size:11px;color:#71829b;min-height:14px;margin-top:6px;"></div>
       </div>
     </div>
     <!-- CENTER -->
-    <div class="panel" style="display:flex;flex-direction:column;gap:14px;min-height:700px;">
+    <div id="center-col" class="panel" style="display:flex;flex-direction:column;gap:14px;min-height:700px;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <div>
-          <div style="font-size:20px;font-weight:700;color:#f8fafc;">To-Do's</div>
-          <div id="todo-count" style="font-size:12px;color:#2978e6;margin-top:2px;"></div>
+          <div style="font-size:20px;font-weight:700;color:#b6b9bd;">To-Do's</div>
+          <div id="todo-count" style="font-size:12px;color:#71829b;margin-top:2px;"></div>
         </div>
-        <button class="btn-s" id="add-btn" onclick="showForm()" style="padding:9px 18px;font-size:13px;">📩 New Item</button>
+        <button class="btn-s" id="add-btn" onclick="showForm()" style="padding:9px 18px;font-size:13px;">+ New Item</button>
       </div>
       <div id="form-wrap" style="display:none;"></div>
       <div class="fbar">
@@ -338,7 +533,7 @@
       <div id="todo-list"><div class="load-center"><div class="spin"></div></div></div>
     </div>
     <!-- RIGHT -->
-    <div style="display:flex;flex-direction:column;gap:16px;">
+    <div id="right-col" style="display:flex;flex-direction:column;gap:16px;">
       <div class="widget">
         <div class="wt">Maps</div>
         <form onsubmit="doMap(event)">
@@ -360,12 +555,12 @@
 </div><!-- /app -->
 
 <script type="module">
-/* ═════════════════════════
+/* ═══════════════════════════════════════════════════
    SINGLE MODULE SCRIPT — everything in one place.
    No plain/module split. No race conditions.
    Firebase imported at top of module, app starts
    after Firebase is ready. Auth check at very end.
-═══════════════════ */
+═══════════════════════════════════════════════════ */
 
 import { initializeApp }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -406,26 +601,171 @@ async function dbSetLinks(tree){
   return setDoc(doc(db,"config","links"), { tree });
 }
 
-/* ══════════════════
-   THEME TOGGLE
-══════════════════════════════ */
-window.toggleTheme = ()=>{
-  const isLight = document.getElementById("theme-chk").checked;
-  document.body.classList.toggle("light", isLight);
-  localStorage.setItem("mk_theme", isLight ? "light" : "dark");
+/* ══════════════════════════════════════
+   THEME PICKER
+══════════════════════════════════════ */
+const THEMES = {
+  '':           {name:'Default',  swatch:'#58a6ff',  cls:''},
+  't-aurora':   {name:'Aurora',   swatch:'#79c0ff',  cls:'t-aurora'},
+  't-obsidian': {name:'Obsidian', swatch:'#f0a500',  cls:'t-obsidian'},
+  't-cobalt':   {name:'Cobalt',   swatch:'#ffc600',  cls:'t-cobalt'},
+  't-fog':      {name:'Fog',      swatch:'#2563eb',  cls:'t-fog'},
+  't-paper':    {name:'Paper',    swatch:'#c2410c',  cls:'t-paper'},
+};
+const THEME_CLASSES = Object.values(THEMES).map(t=>t.cls).filter(Boolean);
+
+window.setTheme = (key)=>{
+  THEME_CLASSES.forEach(c=>document.body.classList.remove(c));
+  const t = THEMES[key] || THEMES[''];
+  if(t.cls) document.body.classList.add(t.cls);
+  localStorage.setItem("mk_theme", key);
+  const sw = document.getElementById("theme-swatch-cur");
+  const nm = document.getElementById("theme-name-cur");
+  if(sw) sw.style.background = t.swatch;
+  if(nm) nm.textContent = t.name;
+  document.querySelectorAll(".theme-opt").forEach((el,i)=>{
+    el.classList.toggle("active", Object.keys(THEMES)[i]===key);
+  });
+  closeThemeMenu();
+};
+window.toggleThemeMenu = ()=>{
+  document.getElementById("theme-dropdown").classList.toggle("open");
+};
+window.closeThemeMenu = ()=>{
+  const d=document.getElementById("theme-dropdown");
+  if(d) d.classList.remove("open");
 };
 function applyStoredTheme(){
-  const t=localStorage.getItem("mk_theme");
-  if(t==="light"){
-    document.body.classList.add("light");
-    const chk=document.getElementById("theme-chk");
-    if(chk) chk.checked=true;
-  }
+  const key = localStorage.getItem("mk_theme")||"";
+  setTheme(key);
 }
 
-/* ══════════════════
+/* ══════════════════════════════════════
+   MOBILE NAV PANELS
+══════════════════════════════════════ */
+const NAV_PANELS = ['nd-links','nd-cal','nd-map'];
+
+window.toggleNavPanel = (id)=>{
+  const panel = document.getElementById(id);
+  const btn   = document.getElementById(id+'-btn');
+  const isOpen = panel.classList.contains('open');
+  // Close all panels first
+  NAV_PANELS.forEach(pid=>{
+    document.getElementById(pid).classList.remove('open');
+    document.getElementById(pid+'-btn').classList.remove('open-state');
+  });
+  if(!isOpen){
+    panel.classList.add('open');
+    btn.classList.add('open-state');
+    // Sync contents when opening
+    if(id==='nd-links') buildMobLinks();
+    if(id==='nd-cal')   buildMobCal();
+    if(id==='nd-map'){
+      // sync map frame
+      const mf=document.getElementById('map-frame');
+      const mfm=document.getElementById('map-frame-m');
+      if(mf&&mfm) mfm.src=mf.src;
+    }
+  }
+};
+// Close nav panels when clicking outside
+document.addEventListener('click', e=>{
+  const inNav = e.target.closest('.nav-drop') || e.target.closest('.theme-picker');
+  if(!inNav){
+    NAV_PANELS.forEach(pid=>{
+      document.getElementById(pid).classList.remove('open');
+      document.getElementById(pid+'-btn').classList.remove('open-state');
+    });
+    closeThemeMenu();
+  }
+});
+
+/* Mobile links mirror */
+function buildMobLinks(){
+  const ul = document.getElementById('link-list-m');
+  const back = document.getElementById('back-btn-m');
+  const ebar = document.getElementById('em-bar-m');
+  const ebtn = document.getElementById('edit-btn-m');
+  if(!ul) return;
+  ul.innerHTML=''; ul.className=lem?'em-on':'';
+  if(back) back.style.display=lstack.length?'block':'none';
+  if(ebar) ebar.style.display=lem?'block':'none';
+  if(ebtn) ebtn.textContent=lem?'Done':'Edit';
+  lcur.forEach((item,i)=>{
+    const isF=!!item.children;
+    const li=document.createElement('li'); li.style.listStyle='none';
+    li.innerHTML='<div class="li-row" onclick="mobLinkClick('+i+')">'
+      +'<span style="font-size:15px;flex-shrink:0;">'+(item.emoji||(isF?'📂':'🔗'))+'</span>'
+      +'<span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+xss(item.name)+'</span>'
+      +(isF?'<span style="font-size:12px;color:var(--tx3);">›</span>':'')
+      +'</div>';
+    ul.appendChild(li);
+  });
+}
+window.mobLinkClick = i=>{
+  const it=lcur[i];
+  if(it.children){lstack.push(lcur);lcur=it.children;buildMobLinks();}
+  else{ window.open(it.url,'_blank'); toggleNavPanel('nd-links'); }
+};
+
+/* Mobile calendar mirror — reuses same calDate/calSel state */
+const MN_M = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DN_M  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+function buildMobCal(){
+  const yr=calDate.getFullYear(), mo=calDate.getMonth();
+  const lbl=document.getElementById('cal-lbl-m');
+  if(lbl) lbl.textContent=MN_M[mo]+' '+yr;
+  const g=document.getElementById('cal-grid-m');
+  if(!g) return;
+  g.style.display='grid';
+  g.style.gridTemplateColumns='repeat(7,1fr)';
+  g.style.gap='2px';
+  g.innerHTML='';
+  const first=new Date(yr,mo,1).getDay();
+  const dim  =new Date(yr,mo+1,0).getDate();
+  const prev =new Date(yr,mo,0).getDate();
+  const tod  =new Date(); tod.setHours(0,0,0,0);
+  for(let i=first-1;i>=0;i--) addMobCD(g,prev-i,mo-1,yr,false,tod);
+  for(let d=1;d<=dim;d++)     addMobCD(g,d,mo,yr,true,tod);
+  const rem=(first+dim)%7===0?0:7-(first+dim)%7;
+  for(let d=1;d<=rem;d++)     addMobCD(g,d,mo+1,yr,false,tod);
+}
+function addMobCD(g,d,mo,yr,inM,tod){
+  const obj=new Date(yr,mo,d); obj.setHours(0,0,0,0);
+  const dow=obj.getDay();
+  const isT=obj.getTime()===tod.getTime();
+  const isS=calSel&&obj.getTime()===calSel.getTime();
+  let cls='cd';
+  if(inM) cls+=' inm';
+  if((dow===0||dow===6)&&!isT&&!isS) cls+=' wknd';
+  if(isT) cls+=' tdy';
+  if(isS) cls+=' sel';
+  const div=document.createElement('div');
+  div.className=cls; div.textContent=obj.getDate();
+  div.title=DN_M[obj.getDay()]+', '+MN_M[obj.getMonth()]+' '+obj.getDate()+', '+obj.getFullYear();
+  div.onclick=()=>{
+    calSel=obj;
+    const sel=document.getElementById('cal-sel-m');
+    if(sel) sel.textContent=div.title;
+    buildMobCal();
+    buildCal(); // also sync desktop
+  };
+  g.appendChild(div);
+}
+/* Map mobile form */
+window.doMapMob = e=>{
+  e.preventDefault();
+  const q=encodeURIComponent(document.getElementById('map-in-m').value);
+  const src='https://maps.google.com/maps?q='+q+'&output=embed&hl=en';
+  document.getElementById('map-frame-m').src=src;
+  document.getElementById('map-frame').src=src;
+};
+
+
+/* ══════════════════════════════════════
    AUTH
-═══════════════════════════ */
+══════════════════════════════════════ */
 const HASH = "0d619ce5a39ed776feb6a0dcaa02a7af3f852b37e15dd8afdd61081fc91f89b0";
 
 async function sha256(s){
@@ -452,36 +792,37 @@ window.doLogout = function(){
 document.getElementById("auth-btn").addEventListener("click", tryAuth);
 document.getElementById("auth-in").addEventListener("keydown", e=>{ if(e.key==="Enter") tryAuth(); });
 
-/* ═══════════════════
+/* ══════════════════════════════════════
    BOOT — Firebase is already loaded here
    because this is a module and all imports
    resolved before any code runs.
-══════════════════════ */
+══════════════════════════════════════ */
 async function boot(){
   /* Show app */
   document.getElementById("auth-gate").classList.add("gone");
   document.getElementById("app").style.display = "block";
   applyStoredTheme();
 
+
   /* Sync widgets — these need the DOM visible first */
   startClock();
   buildCal();
 
-  /* Weather */
+  /* Weather — onload re-init catches all widget anchors in DOM */
   if(!document.getElementById("ww-js")){
-    const s = document.createElement("script");
-    s.id  = "ww-js";
-    s.src = "https://weatherwidget.io/js/widget.min.js";
+    const s=document.createElement("script");
+    s.id="ww-js"; s.src="https://weatherwidget.io/js/widget.min.js";
+    s.onload=()=>{ if(window.__weatherwidget_init) window.__weatherwidget_init(); };
     document.body.appendChild(s);
-  }
+  } else if(window.__weatherwidget_init){ window.__weatherwidget_init(); }
 
   /* Firebase data — runs after DOM is visible */
   await Promise.all([ loadLinks(), loadTodos() ]);
 }
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════════
    CLOCK
-═══════════════════════ */
+══════════════════════════════════════ */
 function startClock(){
   function tick(){
     const n = new Date();
@@ -492,9 +833,9 @@ function startClock(){
   setInterval(tick, 30000);
 }
 
-/* ════════════════════════════
+/* ══════════════════════════════════════
    CALENDAR
-═══════════════════ */
+══════════════════════════════════════ */
 const MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 let calDate=new Date(), calSel=null;
@@ -534,16 +875,16 @@ function addCD(g,d,mo,yr,inM,tod){
 
 /* ══════════════════════════════════════
    MAP
-════════════════════════════════════ */
+══════════════════════════════════════ */
 window.doMap = e => {
   e.preventDefault();
   const q=encodeURIComponent(document.getElementById("map-in").value);
   document.getElementById("map-frame").src="https://maps.google.com/maps?q="+q+"&output=embed&hl=en";
 };
 
-/* ═══════════════════════
+/* ══════════════════════════════════════
    QUICK LINKS  (Firebase)
-═════════════════════════════════ */
+══════════════════════════════════════ */
 let ltree=[], lstack=[], lcur=[], lem=false, lmMode="link", lmIdx=null;
 
 const DEFAULT_LINKS = [
@@ -579,14 +920,14 @@ function drawLinks(){
   ul.innerHTML=""; ul.className=lem?"em-on":"";
   back.style.display=lstack.length?"block":"none";
   ebar.style.display=lem?"block":"none";
-  ebtn.textContent=lem?"Done":"Edit";
+  ebtn.textContent=lem?"Done":"✏️";
   lcur.forEach((item,i)=>{
     const isF=!!item.children;
     const li=document.createElement("li"); li.style.listStyle="none";
     li.innerHTML='<div class="li-row" onclick="lClick('+i+')">'
       +'<span style="font-size:15px;flex-shrink:0;">'+(item.emoji||(isF?"📂":"🔗"))+'</span>'
       +'<span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+xss(item.name)+'</span>'
-      +(isF?'<span style="font-size:12px;color:#475569;">▶️</span>':"")
+      +(isF?'<span style="font-size:12px;color:#71829b;">▶️</span>':"")
       +'<div class="li-ebtns" onclick="event.stopPropagation()">'
         +'<button class="lb lb-m" onclick="mvL('+i+',-1)">↑</button>'
         +'<button class="lb lb-m" onclick="mvL('+i+',1)">↓</button>'
@@ -612,7 +953,7 @@ window.mvL = (i,d)=>{
 window.delL = i=>{ if(confirm("Delete?")){ lcur.splice(i,1); saveLinks(); drawLinks(); } };
 window.editL = i=>{
   lmIdx=i; const it=lcur[i]; lmMode=it.children?"folder":"link";
-  document.getElementById("lm-title").textContent="Edit "+(lmMode==="folder"?"Folder":"Link");
+  document.getElementById("lm-title").textContent="✏️"+(lmMode==="folder"?"Folder":"Link");
   document.getElementById("lm-url-fg").style.display=lmMode==="link"?"flex":"none";
   document.getElementById("lm-name").value=it.name;
   document.getElementById("lm-url").value=it.url||"";
@@ -641,7 +982,7 @@ window.saveLM  = ()=>{
   saveLinks(); drawLinks(); closeLM();
 };
 
-/* ═══════════════════════════════════
+/* ══════════════════════════════════════
    TO-DO'S
 ══════════════════════════════════════ */
 let todos=[], editingTodo=null, activeTag=null;
@@ -882,15 +1223,15 @@ function renderForm(){
       +'<button type="button" class="rt-btn" onclick="richCmd(\'bold\')"><b>B</b></button>'
       +'<button type="button" class="rt-btn" onclick="richCmd(\'italic\')"><i>I</i></button>'
       +'<button type="button" class="rt-btn" onclick="richCmd(\'underline\')"><u>U</u></button>'
-      +'<button type="button" class="rt-btn" onclick="richCmd(\'insertUnorderedList\')">Bullet List</button>'
-      +'<button type="button" class="rt-btn" onclick="richCmd(\'insertOrderedList\')">Ordered List</button>'
-      +'<button type="button" class="rt-btn" onclick="addLink()">🔗</button>'
-      +'<button type="button" class="rt-btn" onclick="richCmd(\'removeFormat\')">Clear Format</button>'
+      +'<button type="button" class="rt-btn" onclick="richCmd(\'insertUnorderedList\')">• List</button>'
+      +'<button type="button" class="rt-btn" onclick="richCmd(\'insertOrderedList\')">1. List</button>'
+      +'<button type="button" class="rt-btn" onclick="addLink()">🔗 Link</button>'
+      +'<button type="button" class="rt-btn" onclick="richCmd(\'removeFormat\')">Clear</button>'
     +'</div>'
     +'<div class="rich-ed" id="f-notes-ed" contenteditable="true">'+notesContent+'</div></div>'
     +'<div class="fbtns">'
     +'<button class="btn-c" onclick="cancelForm()">Cancel</button>'
-    +'<button class="btn-s" id="f-save" onclick="saveForm()">💾Save Item</button>'
+    +'<button class="btn-s" id="f-save" onclick="saveForm()">Save Item</button>'
     +'</div></div>';
   document.getElementById("add-btn").style.display="none";
   setTimeout(()=>{ const el=document.getElementById("f-title"); if(el)el.focus(); },50);
@@ -932,7 +1273,7 @@ window.saveForm = async()=>{
 
 /* ══════════════════════════════════════
    HELPERS
-═══════════════════════════════ */
+══════════════════════════════════════ */
 function fmtTs(ts){
   if(!ts)return "—";
   const d=ts.toDate?ts.toDate():new Date(ts);
@@ -942,7 +1283,7 @@ function xss(s){
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
 
-/* ══════════════════════════
+/* ══════════════════════════════════════
    ENTRY POINT — runs after all imports
    resolve (module guarantee)
 ══════════════════════════════════════ */
@@ -953,6 +1294,5 @@ if(localStorage.getItem("mk_auth")==="1"){
 
 </body>
 </html>
-
 
 </body></html>
